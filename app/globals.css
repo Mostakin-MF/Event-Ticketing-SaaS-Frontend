@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "daisyui";
 
 :root {
   --background: #ffffff;
@@ -6,6 +7,10 @@
 }
 
 @theme inline {
+  --color-primary: #059669;
+  --color-secondary: #d97706;
+  --color-accent: #064e3b;
+  --color-slate-50: #f8fafc;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
