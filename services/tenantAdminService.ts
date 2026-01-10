@@ -4,6 +4,7 @@ import api from '@/lib/axios';
 
 export enum EventStatus {
     DRAFT = 'draft',
+    PUBLISHED = 'published',
     SCHEDULED = 'scheduled',
     ACTIVE = 'active',
     CANCELLED = 'cancelled',
@@ -17,8 +18,8 @@ export interface CreateEventDto {
     venue: string;
     city: string;
     country: string;
-    start_at: Date | string;
-    end_at: Date | string;
+    startAt: Date | string;
+    endAt: Date | string;
     status?: EventStatus;
 }
 
@@ -133,8 +134,15 @@ export const tenantAdminService = {
     },
 
     updateEvent: async (eventId: string, data: Partial<CreateEventDto>) => {
-        const response = await api.put(`/tenant-admin/events/${eventId}`, data);
-        return response.data;
+        console.log('updateEvent called with:', { eventId, data });
+        try {
+            const response = await api.put(`/tenant-admin/events/${eventId}`, data);
+            console.log('updateEvent response:', response.data);
+            return response.data;
+        } catch (error: any) {
+            console.error('updateEvent error:', error?.response?.data || error?.message);
+            throw error;
+        }
     },
 
     deleteEvent: async (eventId: string) => {
