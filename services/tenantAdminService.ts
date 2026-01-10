@@ -270,7 +270,23 @@ export const tenantAdminService = {
     // --- Staff Management ---
     getAllStaff: async (page = 1, limit = 20) => {
         const response = await api.get('/tenant-admin/tenant-users', { params: { page, limit } });
-        return response.data;
+        const data = response.data;
+        
+        // Ensure we return an array and handle pagination
+        const staffList = Array.isArray(data) ? data : (data as any).data || [];
+        
+        // Enrich staff data with user information if not already included
+        return staffList.map((staff: any) => ({
+            id: staff.id || staff.user_id,
+            user_id: staff.user_id,
+            tenant_id: staff.tenant_id,
+            email: staff.email || staff.user?.email,
+            fullName: staff.fullName || staff.full_name || staff.user?.full_name || staff.user?.fullName || 'Team Member',
+            name: staff.name || staff.user?.name,
+            role: staff.role,
+            status: staff.status,
+            ...staff
+        }));
     },
 
     inviteStaff: async (data: InviteStaffDto) => {
