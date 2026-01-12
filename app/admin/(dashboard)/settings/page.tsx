@@ -141,35 +141,35 @@ export default function SettingsPage() {
                             <InputField
                                 label="Platform Name"
                                 value={platformSettings.platformName}
-                                onChange={(e) => setPlatformSettings({ ...platformSettings, platformName: e.target.value })}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPlatformSettings({ ...platformSettings, platformName: e.target.value })}
                             />
                             <InputField
                                 label="Primary Domain"
                                 value={platformSettings.primaryDomain}
-                                onChange={(e) => setPlatformSettings({ ...platformSettings, primaryDomain: e.target.value })}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPlatformSettings({ ...platformSettings, primaryDomain: e.target.value })}
                             />
                             <SelectField
                                 label="System Language"
                                 value={platformSettings.systemLanguage}
-                                onChange={(e) => setPlatformSettings({ ...platformSettings, systemLanguage: e.target.value })}
+                                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setPlatformSettings({ ...platformSettings, systemLanguage: e.target.value })}
                                 options={['English (BD)', 'Bengali', 'English (US)']}
                             />
                             <SelectField
                                 label="Base Currency"
                                 value={platformSettings.baseCurrency}
-                                onChange={(e) => setPlatformSettings({ ...platformSettings, baseCurrency: e.target.value })}
+                                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setPlatformSettings({ ...platformSettings, baseCurrency: e.target.value })}
                                 options={['BDT', 'USD', 'EUR']}
                             />
                             <SelectField
                                 label="Timezone"
                                 value={platformSettings.timezone}
-                                onChange={(e) => setPlatformSettings({ ...platformSettings, timezone: e.target.value })}
+                                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setPlatformSettings({ ...platformSettings, timezone: e.target.value })}
                                 options={['Asia/Dhaka', 'UTC', 'Asia/Kolkata']}
                             />
                             <SelectField
                                 label="Date Format"
                                 value={platformSettings.dateFormat}
-                                onChange={(e) => setPlatformSettings({ ...platformSettings, dateFormat: e.target.value })}
+                                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setPlatformSettings({ ...platformSettings, dateFormat: e.target.value })}
                                 options={['DD/MM/YYYY', 'MM/DD/YYYY', 'YYYY-MM-DD']}
                             />
                         </div>
@@ -188,25 +188,25 @@ export default function SettingsPage() {
                                 label="Session Timeout (hours)"
                                 type="number"
                                 value={securitySettings.sessionTimeout}
-                                onChange={(e) => setSecuritySettings({ ...securitySettings, sessionTimeout: e.target.value })}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSecuritySettings({ ...securitySettings, sessionTimeout: e.target.value })}
                             />
                             <SelectField
                                 label="Two-Factor Authentication"
                                 value={securitySettings.twoFactorAuth}
-                                onChange={(e) => setSecuritySettings({ ...securitySettings, twoFactorAuth: e.target.value })}
+                                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSecuritySettings({ ...securitySettings, twoFactorAuth: e.target.value })}
                                 options={['disabled', 'optional', 'required']}
                             />
                             <InputField
                                 label="Password Min Length"
                                 type="number"
                                 value={securitySettings.passwordMinLength}
-                                onChange={(e) => setSecuritySettings({ ...securitySettings, passwordMinLength: e.target.value })}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSecuritySettings({ ...securitySettings, passwordMinLength: e.target.value })}
                             />
                             <InputField
                                 label="Max Login Attempts"
                                 type="number"
                                 value={securitySettings.maxLoginAttempts}
-                                onChange={(e) => setSecuritySettings({ ...securitySettings, maxLoginAttempts: e.target.value })}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSecuritySettings({ ...securitySettings, maxLoginAttempts: e.target.value })}
                             />
                         </div>
 
@@ -215,13 +215,13 @@ export default function SettingsPage() {
                                 label="Require Email Verification"
                                 description="Users must verify their email before accessing the platform"
                                 checked={securitySettings.requireEmailVerification}
-                                onChange={(checked) => setSecuritySettings({ ...securitySettings, requireEmailVerification: checked })}
+                                onChange={(checked: boolean) => setSecuritySettings({ ...securitySettings, requireEmailVerification: checked })}
                             />
                             <ToggleField
                                 label="Enable CAPTCHA"
                                 description="Show CAPTCHA on login and registration forms"
                                 checked={securitySettings.enableCaptcha}
-                                onChange={(checked) => setSecuritySettings({ ...securitySettings, enableCaptcha: checked })}
+                                onChange={(checked: boolean) => setSecuritySettings({ ...securitySettings, enableCaptcha: checked })}
                             />
                         </div>
 
@@ -239,38 +239,38 @@ export default function SettingsPage() {
                                 label="Email Notifications"
                                 description="Send notifications via email"
                                 checked={notificationSettings.emailNotifications}
-                                onChange={(checked) => setNotificationSettings({ ...notificationSettings, emailNotifications: checked })}
+                                onChange={(checked: boolean) => setNotificationSettings({ ...notificationSettings, emailNotifications: checked })}
                             />
                             <ToggleField
                                 label="SMS Notifications"
                                 description="Send notifications via SMS"
                                 checked={notificationSettings.smsNotifications}
-                                onChange={(checked) => setNotificationSettings({ ...notificationSettings, smsNotifications: checked })}
+                                onChange={(checked: boolean) => setNotificationSettings({ ...notificationSettings, smsNotifications: checked })}
                             />
                             <ToggleField
                                 label="Push Notifications"
                                 description="Send browser push notifications"
                                 checked={notificationSettings.pushNotifications}
-                                onChange={(checked) => setNotificationSettings({ ...notificationSettings, pushNotifications: checked })}
+                                onChange={(checked: boolean) => setNotificationSettings({ ...notificationSettings, pushNotifications: checked })}
                             />
                             <div className="h-px bg-slate-200 my-4"></div>
                             <ToggleField
                                 label="Order Confirmations"
                                 description="Notify users when orders are placed"
                                 checked={notificationSettings.orderConfirmations}
-                                onChange={(checked) => setNotificationSettings({ ...notificationSettings, orderConfirmations: checked })}
+                                onChange={(checked: boolean) => setNotificationSettings({ ...notificationSettings, orderConfirmations: checked })}
                             />
                             <ToggleField
                                 label="Payment Alerts"
                                 description="Notify admins of payment activities"
                                 checked={notificationSettings.paymentAlerts}
-                                onChange={(checked) => setNotificationSettings({ ...notificationSettings, paymentAlerts: checked })}
+                                onChange={(checked: boolean) => setNotificationSettings({ ...notificationSettings, paymentAlerts: checked })}
                             />
                             <ToggleField
                                 label="System Alerts"
                                 description="Notify admins of system events and errors"
                                 checked={notificationSettings.systemAlerts}
-                                onChange={(checked) => setNotificationSettings({ ...notificationSettings, systemAlerts: checked })}
+                                onChange={(checked: boolean) => setNotificationSettings({ ...notificationSettings, systemAlerts: checked })}
                             />
                         </div>
 
@@ -287,34 +287,34 @@ export default function SettingsPage() {
                             <InputField
                                 label="SMTP Host"
                                 value={emailSettings.smtpHost}
-                                onChange={(e) => setEmailSettings({ ...emailSettings, smtpHost: e.target.value })}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmailSettings({ ...emailSettings, smtpHost: e.target.value })}
                             />
                             <InputField
                                 label="SMTP Port"
                                 value={emailSettings.smtpPort}
-                                onChange={(e) => setEmailSettings({ ...emailSettings, smtpPort: e.target.value })}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmailSettings({ ...emailSettings, smtpPort: e.target.value })}
                             />
                             <InputField
                                 label="SMTP Username"
                                 value={emailSettings.smtpUsername}
-                                onChange={(e) => setEmailSettings({ ...emailSettings, smtpUsername: e.target.value })}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmailSettings({ ...emailSettings, smtpUsername: e.target.value })}
                             />
                             <SelectField
                                 label="Encryption"
                                 value={emailSettings.smtpEncryption}
-                                onChange={(e) => setEmailSettings({ ...emailSettings, smtpEncryption: e.target.value })}
+                                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setEmailSettings({ ...emailSettings, smtpEncryption: e.target.value })}
                                 options={['TLS', 'SSL', 'None']}
                             />
                             <InputField
                                 label="From Email"
                                 type="email"
                                 value={emailSettings.fromEmail}
-                                onChange={(e) => setEmailSettings({ ...emailSettings, fromEmail: e.target.value })}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmailSettings({ ...emailSettings, fromEmail: e.target.value })}
                             />
                             <InputField
                                 label="From Name"
                                 value={emailSettings.fromName}
-                                onChange={(e) => setEmailSettings({ ...emailSettings, fromName: e.target.value })}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmailSettings({ ...emailSettings, fromName: e.target.value })}
                             />
                         </div>
 
@@ -331,7 +331,7 @@ export default function SettingsPage() {
                             <SelectField
                                 label="Default Gateway"
                                 value={paymentSettings.defaultGateway}
-                                onChange={(e) => setPaymentSettings({ ...paymentSettings, defaultGateway: e.target.value })}
+                                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setPaymentSettings({ ...paymentSettings, defaultGateway: e.target.value })}
                                 options={['stripe', 'sslcommerz', 'bkash', 'nagad']}
                             />
                         </div>
@@ -341,38 +341,38 @@ export default function SettingsPage() {
                                 label="Stripe"
                                 description="Enable Stripe payment gateway"
                                 checked={paymentSettings.stripeEnabled}
-                                onChange={(checked) => setPaymentSettings({ ...paymentSettings, stripeEnabled: checked })}
+                                onChange={(checked: boolean) => setPaymentSettings({ ...paymentSettings, stripeEnabled: checked })}
                             />
                             <ToggleField
                                 label="SSLCommerz"
                                 description="Enable SSLCommerz payment gateway"
                                 checked={paymentSettings.sslCommerzEnabled}
-                                onChange={(checked) => setPaymentSettings({ ...paymentSettings, sslCommerzEnabled: checked })}
+                                onChange={(checked: boolean) => setPaymentSettings({ ...paymentSettings, sslCommerzEnabled: checked })}
                             />
                             <ToggleField
                                 label="bKash"
                                 description="Enable bKash mobile payment"
                                 checked={paymentSettings.bkashEnabled}
-                                onChange={(checked) => setPaymentSettings({ ...paymentSettings, bkashEnabled: checked })}
+                                onChange={(checked: boolean) => setPaymentSettings({ ...paymentSettings, bkashEnabled: checked })}
                             />
                             <ToggleField
                                 label="Nagad"
                                 description="Enable Nagad mobile payment"
                                 checked={paymentSettings.nagadEnabled}
-                                onChange={(checked) => setPaymentSettings({ ...paymentSettings, nagadEnabled: checked })}
+                                onChange={(checked: boolean) => setPaymentSettings({ ...paymentSettings, nagadEnabled: checked })}
                             />
                             <div className="h-px bg-slate-200 my-4"></div>
                             <ToggleField
                                 label="Test Mode"
                                 description="Use sandbox/test environment for payments"
                                 checked={paymentSettings.testMode}
-                                onChange={(checked) => setPaymentSettings({ ...paymentSettings, testMode: checked })}
+                                onChange={(checked: boolean) => setPaymentSettings({ ...paymentSettings, testMode: checked })}
                             />
                             <ToggleField
                                 label="Auto Refund"
                                 description="Automatically process refunds for cancelled orders"
                                 checked={paymentSettings.autoRefund}
-                                onChange={(checked) => setPaymentSettings({ ...paymentSettings, autoRefund: checked })}
+                                onChange={(checked: boolean) => setPaymentSettings({ ...paymentSettings, autoRefund: checked })}
                             />
                         </div>
 

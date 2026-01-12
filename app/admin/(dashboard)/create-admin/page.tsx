@@ -83,7 +83,7 @@ export default function CreateAdminPage() {
             </div>
 
             {/* Form Card */}
-            <div className="max-w-2xl">
+            <div className="max-w-2xl mx-auto">
                 <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
                     {/* Icon */}
                     <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center mb-6 shadow-lg shadow-emerald-900/20">
@@ -93,8 +93,8 @@ export default function CreateAdminPage() {
                     {/* Status Messages */}
                     {status.type !== 'idle' && (
                         <div className={`mb-6 p-4 rounded-xl flex items-center gap-3 ${status.type === 'success'
-                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                                : 'bg-red-50 text-red-700 border border-red-200'
+                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                            : 'bg-red-50 text-red-700 border border-red-200'
                             }`}>
                             {status.type === 'success' ? <CheckCircle2 size={20} /> : <AlertCircle size={20} />}
                             <p className="text-sm font-semibold">{status.message}</p>
@@ -115,7 +115,7 @@ export default function CreateAdminPage() {
                                     required
                                     value={formData.fullName}
                                     onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                                    placeholder="John Doe"
+                                    placeholder="Enter full name"
                                     className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
                                 />
                             </div>
@@ -133,7 +133,7 @@ export default function CreateAdminPage() {
                                     required
                                     value={formData.email}
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                    placeholder="admin@platform.com"
+                                    placeholder="Enter email address"
                                     className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
                                 />
                             </div>

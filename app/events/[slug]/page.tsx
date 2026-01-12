@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Loader2, AlertCircle } from 'lucide-react';
-import ThemeRenderer from '@/components/themes/ThemeRenderer';
+import DynamicThemeRenderer from '@/components/themes/DynamicThemeRenderer';
 import { useParams } from 'next/navigation';
 
 export default function TenantPublicPage() { // Remove props
@@ -60,6 +60,22 @@ export default function TenantPublicPage() { // Remove props
         );
     }
 
-    // Render the theme
-    return <ThemeRenderer tenant={data.tenant} config={data.config} theme={data.theme} events={data.events} />;
+    // Wrap the single event in the mock expected by DynamicThemeRenderer if needed
+    // Actually, DynamicThemeRenderer takes 'event' as a single object.
+    const firstEvent = data.events?.[0] || {};
+
+    return (
+        <DynamicThemeRenderer
+            tenant={data.tenant}
+            event={{
+                ...firstEvent,
+                themeContent: data.config?.styleOverrides || {}, // Fallback mapping
+                themeCustomization: data.config?.styleOverrides?.colors ? {
+                    primaryColor: data.config.styleOverrides.colors.primary,
+                    secondaryColor: data.config.styleOverrides.colors.secondary
+                } : {}
+            }}
+            theme={data.theme}
+        />
+    );
 }

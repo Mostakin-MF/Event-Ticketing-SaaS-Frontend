@@ -181,39 +181,39 @@ export default function ProfilePage() {
                                 label="Full Name"
                                 icon={User}
                                 value={personalInfo.fullName}
-                                onChange={(e) => setPersonalInfo({ ...personalInfo, fullName: e.target.value })}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPersonalInfo({ ...personalInfo, fullName: e.target.value })}
                             />
                             <InputField
                                 label="Email Address"
                                 icon={Mail}
                                 type="email"
                                 value={personalInfo.email}
-                                onChange={(e) => setPersonalInfo({ ...personalInfo, email: e.target.value })}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPersonalInfo({ ...personalInfo, email: e.target.value })}
                             />
                             <InputField
                                 label="Phone Number"
                                 icon={Phone}
                                 value={personalInfo.phone}
-                                onChange={(e) => setPersonalInfo({ ...personalInfo, phone: e.target.value })}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPersonalInfo({ ...personalInfo, phone: e.target.value })}
                             />
                             <InputField
                                 label="Location"
                                 icon={MapPin}
                                 value={personalInfo.location}
-                                onChange={(e) => setPersonalInfo({ ...personalInfo, location: e.target.value })}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPersonalInfo({ ...personalInfo, location: e.target.value })}
                             />
                             <SelectField
                                 label="Timezone"
                                 icon={Globe}
                                 value={personalInfo.timezone}
-                                onChange={(e) => setPersonalInfo({ ...personalInfo, timezone: e.target.value })}
+                                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setPersonalInfo({ ...personalInfo, timezone: e.target.value })}
                                 options={['Asia/Dhaka', 'UTC', 'Asia/Kolkata', 'America/New_York']}
                             />
                             <SelectField
                                 label="Language"
                                 icon={Globe}
                                 value={personalInfo.language}
-                                onChange={(e) => setPersonalInfo({ ...personalInfo, language: e.target.value })}
+                                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setPersonalInfo({ ...personalInfo, language: e.target.value })}
                                 options={['English (BD)', 'Bengali', 'English (US)']}
                             />
                         </div>
@@ -222,7 +222,7 @@ export default function ProfilePage() {
                             <label className="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wide">Bio</label>
                             <textarea
                                 value={personalInfo.bio}
-                                onChange={(e) => setPersonalInfo({ ...personalInfo, bio: e.target.value })}
+                                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setPersonalInfo({ ...personalInfo, bio: e.target.value })}
                                 rows={4}
                                 className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all resize-none"
                                 placeholder="Tell us about yourself..."
@@ -244,14 +244,14 @@ export default function ProfilePage() {
                             <PasswordField
                                 label="Current Password"
                                 value={securitySettings.currentPassword}
-                                onChange={(e) => setSecuritySettings({ ...securitySettings, currentPassword: e.target.value })}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSecuritySettings({ ...securitySettings, currentPassword: e.target.value })}
                                 show={showCurrentPassword}
                                 onToggle={() => setShowCurrentPassword(!showCurrentPassword)}
                             />
                             <PasswordField
                                 label="New Password"
                                 value={securitySettings.newPassword}
-                                onChange={(e) => setSecuritySettings({ ...securitySettings, newPassword: e.target.value })}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSecuritySettings({ ...securitySettings, newPassword: e.target.value })}
                                 show={showNewPassword}
                                 onToggle={() => setShowNewPassword(!showNewPassword)}
                             />
@@ -260,7 +260,7 @@ export default function ProfilePage() {
                                 icon={Lock}
                                 type="password"
                                 value={securitySettings.confirmPassword}
-                                onChange={(e) => setSecuritySettings({ ...securitySettings, confirmPassword: e.target.value })}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSecuritySettings({ ...securitySettings, confirmPassword: e.target.value })}
                             />
                             <button
                                 onClick={handlePasswordChange}
@@ -292,7 +292,7 @@ export default function ProfilePage() {
                                 label="Session Timeout (hours)"
                                 icon={Shield}
                                 value={securitySettings.sessionTimeout}
-                                onChange={(e) => setSecuritySettings({ ...securitySettings, sessionTimeout: e.target.value })}
+                                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSecuritySettings({ ...securitySettings, sessionTimeout: e.target.value })}
                                 options={['1', '6', '12', '24', '48']}
                             />
                             <button className="flex items-center gap-2 px-6 py-2.5 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition-colors">
@@ -384,13 +384,13 @@ export default function ProfilePage() {
 }
 
 // Components
-function TabButton({ active, onClick, icon: Icon, label }: any) {
+function TabButton({ active, onClick, icon: Icon, label }: { active: boolean, onClick: () => void, icon: any, label: string }) {
     return (
         <button
             onClick={onClick}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${active
-                    ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-900/20'
-                    : 'text-slate-600 hover:bg-slate-100'
+                ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-900/20'
+                : 'text-slate-600 hover:bg-slate-100'
                 }`}
         >
             <Icon size={16} />
@@ -399,7 +399,7 @@ function TabButton({ active, onClick, icon: Icon, label }: any) {
     );
 }
 
-function SectionHeader({ icon: Icon, title, description }: any) {
+function SectionHeader({ icon: Icon, title, description }: { icon: any, title: string, description: string }) {
     return (
         <div className="flex items-start gap-3 pb-4 border-b border-slate-200">
             <div className="p-2 bg-emerald-100 text-emerald-600 rounded-lg">
@@ -413,7 +413,7 @@ function SectionHeader({ icon: Icon, title, description }: any) {
     );
 }
 
-function InputField({ label, icon: Icon, value, onChange, type = 'text' }: any) {
+function InputField({ label, icon: Icon, value, onChange, type = 'text' }: { label: string, icon: any, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, type?: string }) {
     return (
         <div>
             <label className="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wide">{label}</label>
@@ -432,7 +432,7 @@ function InputField({ label, icon: Icon, value, onChange, type = 'text' }: any) 
     );
 }
 
-function PasswordField({ label, value, onChange, show, onToggle }: any) {
+function PasswordField({ label, value, onChange, show, onToggle }: { label: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, show: boolean, onToggle: () => void }) {
     return (
         <div>
             <label className="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wide">{label}</label>
@@ -458,7 +458,7 @@ function PasswordField({ label, value, onChange, show, onToggle }: any) {
     );
 }
 
-function SelectField({ label, icon: Icon, value, onChange, options }: any) {
+function SelectField({ label, icon: Icon, value, onChange, options }: { label: string, icon: any, value: string, onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void, options: string[] }) {
     return (
         <div>
             <label className="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wide">{label}</label>
@@ -480,7 +480,7 @@ function SelectField({ label, icon: Icon, value, onChange, options }: any) {
     );
 }
 
-function ToggleField({ label, description, checked, onChange }: any) {
+function ToggleField({ label, description, checked, onChange }: { label: string, description: string, checked: boolean, onChange: (checked: boolean) => void }) {
     return (
         <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200">
             <div className="flex-1">
@@ -501,7 +501,7 @@ function ToggleField({ label, description, checked, onChange }: any) {
     );
 }
 
-function SaveButton({ onClick, saving }: any) {
+function SaveButton({ onClick, saving }: { onClick: () => void, saving: boolean }) {
     return (
         <div className="pt-4 border-t border-slate-200">
             <button

@@ -21,6 +21,11 @@ export interface CreateEventDto {
     startAt: Date | string;
     endAt: Date | string;
     status?: EventStatus;
+    // Theme Fields
+    themeId?: string;
+    themeContent?: any;
+    themeCustomization?: any;
+    seoSettings?: any;
 }
 
 export type UpdateEventDto = Partial<CreateEventDto>;
@@ -330,6 +335,27 @@ export const tenantAdminService = {
 
     updateTenantBranding: async (data: UpdateTenantBrandingDto) => {
         const response = await api.put('/tenant-admin/tenant/branding', data);
+        return response.data;
+    },
+
+    // --- Theme Marketplace ---
+    getAvailableThemes: async () => {
+        const response = await api.get('/tenant-admin/themes/available');
+        return response.data;
+    },
+
+    getPurchasedThemes: async () => {
+        const response = await api.get('/tenant-admin/themes/purchased');
+        return response.data;
+    },
+
+    purchaseTheme: async (themeId: string, paymentMethodId: string) => {
+        const response = await api.post(`/tenant-admin/themes/${themeId}/purchase`, { paymentMethodId });
+        return response.data;
+    },
+
+    checkThemeAccess: async (themeId: string) => {
+        const response = await api.get(`/tenant-admin/themes/check-access/${themeId}`);
         return response.data;
     },
 };

@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation';
-import ModernDarkEventPage from '@/components/themes/modern-dark/components/EventLandingPage';
-import VibrantFestivalEventPage from '@/components/themes/vibrant-festival/components/EventLandingPage';
-import ProfessionalCorporateEventPage from '@/components/themes/professional-corporate/components/EventLandingPage';
+import { Metadata } from 'next';
+import DynamicThemeRenderer from '@/components/themes/DynamicThemeRenderer';
 
 interface PageProps {
     params: Promise<{
@@ -46,10 +45,32 @@ async function getTickets(eventId: string) {
     }
 }
 
-export default async function PublicEventPage({ params }: PageProps) {
-    // Await params to unwrap the Promise (Next.js 15+)
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { tenantSlug, eventSlug } = await params;
+    const data = await getEventData(tenantSlug, eventSlug);
 
+    if (!data?.event) {
+        return {
+            title: 'Event Not Found',
+        };
+    }
+
+    const { event } = data;
+    const seo = event.seoSettings || {};
+
+    return {
+        title: seo.metaTitle || event.name,
+        description: seo.metaDescription || event.description,
+        openGraph: {
+            title: seo.metaTitle || event.name,
+            description: seo.metaDescription || event.description,
+            images: seo.ogImage ? [seo.ogImage] : (event.imageUrl ? [event.imageUrl] : []),
+        },
+    };
+}
+
+export default async function PublicEventPage({ params }: PageProps) {
+    const { tenantSlug, eventSlug } = await params;
     const data = await getEventData(tenantSlug, eventSlug);
 
     if (!data || !data.event) {
@@ -58,24 +79,25 @@ export default async function PublicEventPage({ params }: PageProps) {
 
     const { event } = data;
     const tickets = await getTickets(event.id);
+    const tenant = event.tenant || { name: tenantSlug };
+    const theme = event.theme;
 
-    // Dynamically load theme based on event.theme.name
-    const themeName = event.theme?.name || 'Modern Dark';
-    const tenantName = event.tenant?.name || tenantSlug;
-
-    const themeComponents: Record<string, any> = {
-        'Modern Dark': ModernDarkEventPage,
-        'Vibrant Festival': VibrantFestivalEventPage,
-        'Professional Corporate': ProfessionalCorporateEventPage,
-    };
-
-    const ThemeComponent = themeComponents[themeName] || ModernDarkEventPage;
+    if (!theme) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white p-8">
+                <div className="text-center">
+                    <h1 className="text-4xl font-black mb-4">No Theme Assigned</h1>
+                    <p className="text-slate-400">Please assign a theme to this event in the dashboard.</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
-        <ThemeComponent
-            event={event}
-            tickets={tickets}
-            tenantName={tenantName}
+        <DynamicThemeRenderer
+            tenant={tenant}
+            event={{ ...event, tickets }}
+            theme={theme}
         />
     );
 }

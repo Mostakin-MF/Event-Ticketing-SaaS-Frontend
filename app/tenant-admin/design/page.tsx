@@ -1,6 +1,12 @@
 'use client';
+
 import { useState, useEffect } from 'react';
-import { Palette, Upload, Layout, Globe, Save, CheckCircle, Smartphone, Monitor, Loader2, Link as LinkIcon, AlertCircle } from 'lucide-react';
+import {
+    Palette, Upload, Layout, Globe, Save, CheckCircle,
+    Monitor, Loader2, Link as LinkIcon,
+    Sparkles, Wand2, Paintbrush,
+    Image as ImageIcon
+} from 'lucide-react';
 import { adminService } from '@/services/adminService';
 import { authService } from '@/services/authService';
 
@@ -45,14 +51,12 @@ export default function TenantDesignPage() {
                     adminService.getAllThemes({}),
                 ]);
 
-                setThemes(themesData.data);
+                setThemes(themesData.data || []);
 
-                // Set slug from config relation (safely)
                 if (configData.tenant?.slug) {
                     setTenantSlug(configData.tenant.slug);
                 }
 
-                // Initialize State from Config
                 if (configData.themeId) setSelectedThemeId(configData.themeId);
                 if (configData.styleOverrides?.colors) {
                     setColors(prev => ({ ...prev, ...configData.styleOverrides.colors }));
@@ -84,28 +88,42 @@ export default function TenantDesignPage() {
             alert('Design saved successfully!');
         } catch (error) {
             console.error("Failed to save", error);
-            alert('Failed to save changes.');
+            alert('Failed to save changes');
         } finally {
             setSaving(false);
         }
     }
 
-    if (loading) return <div className="flex h-96 items-center justify-center"><Loader2 className="animate-spin text-emerald-500" size={32} /></div>;
+    if (loading) return (
+        <div className="min-h-screen flex items-center justify-center bg-slate-50">
+            <Loader2 className="animate-spin text-emerald-500" size={32} />
+        </div>
+    );
+
+    const presetPalettes = [
+        { name: "Emerald & Night", primary: "#10b981", secondary: "#f59e0b", background: "#020617", text: "#ffffff" },
+        { name: "Oceanic Blue", primary: "#0ea5e9", secondary: "#6366f1", background: "#0f172a", text: "#e2e8f0" },
+        { name: "Purple Haze", primary: "#8b5cf6", secondary: "#ec4899", background: "#111827", text: "#f9fafb" },
+        { name: "Midnight Red", primary: "#ef4444", secondary: "#f97316", background: "#0c0a09", text: "#fafaf9" },
+    ];
 
     return (
-        <div className="space-y-8 pb-20">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="min-h-screen bg-slate-50 pb-20 animate-in fade-in duration-500">
+            {/* Header */}
+            <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-slate-200 px-6 py-4 flex items-center justify-between shadow-sm">
                 <div>
-                    <h1 className="text-3xl font-black text-slate-900 tracking-tight">Site Design</h1>
-                    <p className="text-slate-500 mt-2">Customize how your event portal looks to your attendees.</p>
+                    <h1 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+                        <Wand2 className="text-emerald-600" size={24} />
+                        Site Builder
+                    </h1>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                     {tenantSlug && (
                         <a
-                            href={`/events/${tenantSlug}`}
+                            href={`/${tenantSlug}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition-colors"
+                            className="flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold text-sm rounded-xl hover:bg-slate-50 hover:text-emerald-600 hover:border-emerald-200 transition-all shadow-sm"
                         >
                             <Globe size={18} />
                             View Live Site
@@ -114,119 +132,169 @@ export default function TenantDesignPage() {
                     <button
                         onClick={handleSave}
                         disabled={saving}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-900/20 disabled:opacity-50"
+                        className="flex items-center gap-2 px-6 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/20 active:scale-95 disabled:opacity-50 disabled:active:scale-100"
                     >
                         {saving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
-                        {saving ? 'Saving...' : 'Save Changes'}
+                        {saving ? 'Publishing...' : 'Publish Changes'}
                     </button>
                 </div>
-            </div>
+            </header>
 
-            {/* Navigation Tabs */}
-            <div className="flex items-center gap-1 bg-white p-1 rounded-2xl border border-slate-200 w-fit">
-                {['theme', 'customization', 'content'].map((tab) => (
-                    <button
-                        key={tab}
-                        onClick={() => setActiveTab(tab)}
-                        className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all capitalize ${activeTab === tab ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'}`}
-                    >
-                        {tab === 'theme' && <Layout size={18} />}
-                        {tab === 'customization' && <Palette size={18} />}
-                        {tab === 'content' && <Upload size={18} />}
-                        {tab === 'theme' ? 'Theme Selection' : tab === 'customization' ? 'Branding & Colors' : 'Assets & Content'}
-                    </button>
-                ))}
-            </div>
+            {/* Main Content Area */}
+            <div className="max-w-5xl mx-auto px-6 py-8">
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Editor Area */}
-                <div className="lg:col-span-2 space-y-6">
+                {/* Horizontal Tabs */}
+                <div className="flex bg-white p-1 rounded-2xl border border-slate-200 shadow-sm mb-8">
+                    {[
+                        { id: 'theme', icon: Layout, label: 'Theme Selection' },
+                        { id: 'customization', icon: Palette, label: 'Branding & Colors' },
+                        { id: 'content', icon: Upload, label: 'Content & Assets' }
+                    ].map((tab) => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition-all ${activeTab === tab.id
+                                    ? 'bg-slate-900 text-white shadow-md'
+                                    : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
+                                }`}
+                        >
+                            <tab.icon size={18} />
+                            {tab.label}
+                        </button>
+                    ))}
+                </div>
+
+                {/* Content Container */}
+                <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden min-h-[600px]">
+
                     {activeTab === 'theme' && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {themes.map(theme => (
-                                <div key={theme.id} onClick={() => setSelectedThemeId(theme.id)} className={`group relative rounded-2xl border-2 overflow-hidden cursor-pointer transition-all ${selectedThemeId === theme.id ? 'border-emerald-500 shadow-xl ring-4 ring-emerald-500/10' : 'border-slate-200 hover:border-slate-300'}`}>
-                                    <div className="aspect-video bg-slate-100 relative">
-                                        {theme.thumbnailUrl ? (
-                                            <img src={theme.thumbnailUrl} alt={theme.name} className="w-full h-full object-cover" />
-                                        ) : (
-                                            <div className="w-full h-full flex items-center justify-center text-slate-400 font-bold text-sm">No Preview</div>
-                                        )}
-                                        {selectedThemeId === theme.id && (
-                                            <div className="absolute inset-0 bg-emerald-500/10 flex items-center justify-center">
-                                                <div className="bg-emerald-500 text-white p-2 rounded-full shadow-xl">
-                                                    <CheckCircle size={24} />
+                        <div className="p-8 animate-in slide-in-from-bottom-4 duration-300">
+                            <div className="mb-6">
+                                <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                                    <Sparkles className="text-emerald-500" />
+                                    Choose a Theme
+                                </h2>
+                                <p className="text-slate-500 mt-1">Select a starting template for your event portal.</p>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {themes.map(theme => (
+                                    <div
+                                        key={theme.id}
+                                        onClick={() => setSelectedThemeId(theme.id)}
+                                        className={`
+                                            group relative rounded-2xl border-2 overflow-hidden cursor-pointer transition-all duration-300
+                                            ${selectedThemeId === theme.id
+                                                ? 'border-emerald-500 shadow-xl shadow-emerald-500/10 scale-[1.02]'
+                                                : 'border-slate-100 hover:border-slate-300 hover:shadow-lg'
+                                            }
+                                        `}
+                                    >
+                                        <div className="aspect-video bg-slate-100 relative overflow-hidden">
+                                            {theme.thumbnailUrl ? (
+                                                <img src={theme.thumbnailUrl} alt={theme.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center text-slate-300">
+                                                    <Layout size={40} />
+                                                </div>
+                                            )}
+
+                                            {/* Selection Badge */}
+                                            <div className={`absolute top-3 right-3 transition-all duration-300 ${selectedThemeId === theme.id ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
+                                                <div className="bg-emerald-500 text-white p-2 rounded-full shadow-lg">
+                                                    <CheckCircle size={20} fill="white" className="text-emerald-500" />
                                                 </div>
                                             </div>
-                                        )}
-                                    </div>
-                                    <div className="p-4 bg-white">
-                                        <div className="flex justify-between items-start">
-                                            <div>
-                                                <h3 className="font-bold text-slate-900">{theme.name}</h3>
-                                                <p className="text-xs text-slate-500 mt-1 line-clamp-2">{theme.description}</p>
-                                            </div>
-                                            {theme.isPremium && theme.price > 0 ? (
-                                                <span className="bg-slate-100 text-slate-700 text-xs font-bold px-2 py-1 rounded-lg">${theme.price}</span>
-                                            ) : (
-                                                <span className="bg-emerald-100 text-emerald-700 text-xs font-bold px-2 py-1 rounded-lg">FREE</span>
+
+                                            {/* Premium Badge */}
+                                            {theme.isPremium && (
+                                                <div className="absolute top-3 left-3 bg-black/60 backdrop-blur text-white text-[10px] font-bold px-2.5 py-1 rounded-lg">
+                                                    PREMIUM
+                                                </div>
                                             )}
                                         </div>
+                                        <div className="p-5 bg-white">
+                                            <h4 className="font-bold text-lg text-slate-900 group-hover:text-emerald-600 transition-colors">{theme.name}</h4>
+                                            <p className="text-sm text-slate-500 mt-1 line-clamp-2">{theme.description}</p>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
                         </div>
                     )}
 
                     {activeTab === 'customization' && (
-                        <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm space-y-8">
-                            <div>
-                                <h2 className="font-bold text-lg text-slate-900 mb-1">Color Palette</h2>
-                                <p className="text-sm text-slate-500 mb-6">Customize the primary and secondary colors of your public site.</p>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Primary Color</label>
-                                        <div className="flex gap-3">
-                                            <input
-                                                type="color"
-                                                value={colors.primary}
-                                                onChange={(e) => setColors({ ...colors, primary: e.target.value })}
-                                                className="h-12 w-20 rounded-xl cursor-pointer border-0 p-1 bg-slate-100"
-                                            />
-                                            <div className="flex-1">
-                                                <div className="text-sm font-bold text-slate-900 uppercase">{colors.primary}</div>
-                                                <div className="text-xs text-slate-500">Main Brand Color</div>
-                                            </div>
-                                        </div>
+                        <div className="p-8 animate-in slide-in-from-bottom-4 duration-300">
+                            <div className="mb-8">
+                                <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                                    <Paintbrush className="text-emerald-500" />
+                                    Branding & Style
+                                </h2>
+                                <p className="text-slate-500 mt-1">Customize your brand colors to match your identity.</p>
+                            </div>
+
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                                {/* Color Palettes */}
+                                <div>
+                                    <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">Quick Palettes</h3>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        {presetPalettes.map((palette) => (
+                                            <button
+                                                key={palette.name}
+                                                onClick={() => setColors({
+                                                    primary: palette.primary,
+                                                    secondary: palette.secondary,
+                                                    background: palette.background,
+                                                    text: palette.text
+                                                })}
+                                                className="flex items-center gap-4 p-4 rounded-2xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/10 transition-all text-left group bg-slate-50/50"
+                                            >
+                                                <div className="grid grid-cols-2 w-10 h-10 rounded-lg overflow-hidden shadow-sm shrink-0">
+                                                    <div style={{ background: palette.primary }} />
+                                                    <div style={{ background: palette.secondary }} />
+                                                    <div style={{ background: palette.background }} />
+                                                    <div style={{ background: palette.text }} />
+                                                </div>
+                                                <span className="font-bold text-slate-700 group-hover:text-emerald-700">
+                                                    {palette.name}
+                                                </span>
+                                            </button>
+                                        ))}
                                     </div>
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Secondary Color</label>
-                                        <div className="flex gap-3">
-                                            <input
-                                                type="color"
-                                                value={colors.secondary}
-                                                onChange={(e) => setColors({ ...colors, secondary: e.target.value })}
-                                                className="h-12 w-20 rounded-xl cursor-pointer border-0 p-1 bg-slate-100"
-                                            />
-                                            <div className="flex-1">
-                                                <div className="text-sm font-bold text-slate-900 uppercase">{colors.secondary}</div>
-                                                <div className="text-xs text-slate-500">Accents & Highlights</div>
+                                </div>
+
+                                {/* Custom Color Controls */}
+                                <div>
+                                    <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">Fine Tuning</h3>
+                                    <div className="space-y-6">
+                                        {[
+                                            { key: 'primary', label: 'Primary Brand Color', desc: 'Main buttons and highlights' },
+                                            { key: 'secondary', label: 'Secondary Accent', desc: 'Subtle details and borders' },
+                                            { key: 'background', label: 'Page Background', desc: 'Main canvas color' },
+                                            { key: 'text', label: 'Typography Color', desc: 'Headings and paragraphs' },
+                                        ].map((color) => (
+                                            <div key={color.key} className="flex items-center gap-6">
+                                                <div className="relative group cursor-pointer">
+                                                    <div
+                                                        className="w-14 h-14 rounded-2xl shadow-sm border border-slate-200 overflow-hidden"
+                                                        style={{ backgroundColor: colors[color.key as keyof typeof colors] }}
+                                                    >
+                                                        <input
+                                                            type="color"
+                                                            value={colors[color.key as keyof typeof colors]}
+                                                            onChange={(e) => setColors({ ...colors, [color.key]: e.target.value })}
+                                                            className="opacity-0 w-full h-full cursor-pointer absolute inset-0"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <div className="font-bold text-slate-900">{color.label}</div>
+                                                    <div className="text-xs text-slate-500 font-mono mt-1 uppercase opacity-70">
+                                                        {colors[color.key as keyof typeof colors]}
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Background Color</label>
-                                        <div className="flex gap-3">
-                                            <input
-                                                type="color"
-                                                value={colors.background}
-                                                onChange={(e) => setColors({ ...colors, background: e.target.value })}
-                                                className="h-12 w-20 rounded-xl cursor-pointer border-0 p-1 bg-slate-100"
-                                            />
-                                            <div className="flex-1">
-                                                <div className="text-sm font-bold text-slate-900 uppercase">{colors.background}</div>
-                                                <div className="text-xs text-slate-500">Page Background</div>
-                                            </div>
-                                        </div>
+                                        ))}
                                     </div>
                                 </div>
                             </div>
@@ -234,164 +302,95 @@ export default function TenantDesignPage() {
                     )}
 
                     {activeTab === 'content' && (
-                        <div className="space-y-6">
-                            <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm">
-                                <h2 className="font-bold text-lg text-slate-900 mb-6">Brand Assets</h2>
-                                <div className="space-y-6">
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Logo URL</label>
-                                        <input
-                                            type="text"
-                                            value={assets.logoUrl}
-                                            onChange={(e) => setAssets({ ...assets, logoUrl: e.target.value })}
-                                            placeholder="https://example.com/logo.png"
-                                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10"
-                                        />
-                                        <p className="text-xs text-slate-400">Recommended height: 40px (Transparent PNG)</p>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Banner / Hero Image URL</label>
-                                        <input
-                                            type="text"
-                                            value={assets.bannerUrl}
-                                            onChange={(e) => setAssets({ ...assets, bannerUrl: e.target.value })}
-                                            placeholder="https://example.com/banner.jpg"
-                                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10"
-                                        />
-                                    </div>
-                                </div>
+                        <div className="p-8 animate-in slide-in-from-bottom-4 duration-300">
+                            <div className="mb-8">
+                                <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                                    <ImageIcon className="text-emerald-500" />
+                                    Content & Assets
+                                </h2>
+                                <p className="text-slate-500 mt-1">Manage your logo, banners, and general site information.</p>
                             </div>
 
-                            <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm">
-                                <h2 className="font-bold text-lg text-slate-900 mb-6">Site Information</h2>
-                                <div className="space-y-6">
-                                    <div className="space-y-6">
+                            <div className="max-w-3xl space-y-10">
+                                {/* Assets Section */}
+                                <section className="space-y-6">
+                                    <h3 className="text-sm font-bold text-slate-900 pb-2 border-b border-slate-100">Visual Assets</h3>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                        <div className="space-y-3">
+                                            <label className="text-sm font-bold text-slate-700">Logo URL</label>
+                                            <div className="relative">
+                                                <input
+                                                    type="text"
+                                                    value={assets.logoUrl}
+                                                    onChange={(e) => setAssets({ ...assets, logoUrl: e.target.value })}
+                                                    placeholder="https://..."
+                                                    className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+                                                />
+                                                <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                                            </div>
+                                            <p className="text-xs text-slate-400">Recommended: Transparent PNG, height 40px</p>
+                                        </div>
+
+                                        <div className="space-y-3">
+                                            <label className="text-sm font-bold text-slate-700">Hero Banner URL</label>
+                                            <div className="relative">
+                                                <input
+                                                    type="text"
+                                                    value={assets.bannerUrl}
+                                                    onChange={(e) => setAssets({ ...assets, bannerUrl: e.target.value })}
+                                                    placeholder="https://..."
+                                                    className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+                                                />
+                                                <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                                            </div>
+                                            <p className="text-xs text-slate-400">Recommended: 1920x600px JPG or WebP</p>
+                                        </div>
+                                    </div>
+                                </section>
+
+                                {/* Site Details Section */}
+                                <section className="space-y-6">
+                                    <h3 className="text-sm font-bold text-slate-900 pb-2 border-b border-slate-100">Site Information</h3>
+
+                                    <div className="space-y-5">
                                         <div className="space-y-2">
-                                            <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Site Title</label>
+                                            <label className="text-sm font-bold text-slate-700">Page Title</label>
                                             <input
                                                 type="text"
                                                 value={siteInfo.title}
                                                 onChange={(e) => setSiteInfo({ ...siteInfo, title: e.target.value })}
-                                                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10"
+                                                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
                                             />
                                         </div>
+
                                         <div className="space-y-2">
-                                            <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Site Description</label>
+                                            <label className="text-sm font-bold text-slate-700">Description</label>
                                             <textarea
                                                 value={siteInfo.description}
                                                 onChange={(e) => setSiteInfo({ ...siteInfo, description: e.target.value })}
-                                                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 h-24 resize-none"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Contact Email</label>
-                                            <input
-                                                type="email"
-                                                value={(siteInfo as any).contactEmail || ''}
-                                                onChange={(e) => setSiteInfo({ ...siteInfo, contactEmail: e.target.value } as any)}
-                                                placeholder="support@yourdomain.com"
-                                                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10"
+                                                rows={4}
+                                                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all resize-none"
                                             />
                                         </div>
 
-                                        <div className="pt-4 border-t border-slate-100">
-                                            <h3 className="text-sm font-bold text-slate-900 mb-4">Social Media Links</h3>
-                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                <div className="space-y-2">
-                                                    <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Facebook</label>
-                                                    <input
-                                                        type="text"
-                                                        value={siteInfo.socialLinks?.facebook || ''}
-                                                        onChange={(e) => setSiteInfo({ ...siteInfo, socialLinks: { ...siteInfo.socialLinks, facebook: e.target.value } })}
-                                                        placeholder="URL"
-                                                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10"
-                                                    />
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Twitter / X</label>
-                                                    <input
-                                                        type="text"
-                                                        value={siteInfo.socialLinks?.twitter || ''}
-                                                        onChange={(e) => setSiteInfo({ ...siteInfo, socialLinks: { ...siteInfo.socialLinks, twitter: e.target.value } })}
-                                                        placeholder="URL"
-                                                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10"
-                                                    />
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Instagram</label>
-                                                    <input
-                                                        type="text"
-                                                        value={siteInfo.socialLinks?.instagram || ''}
-                                                        onChange={(e) => setSiteInfo({ ...siteInfo, socialLinks: { ...siteInfo.socialLinks, instagram: e.target.value } })}
-                                                        placeholder="URL"
-                                                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10"
-                                                    />
-                                                </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div className="space-y-2">
+                                                <label className="text-sm font-bold text-slate-700">Contact Email</label>
+                                                <input
+                                                    type="text"
+                                                    value={(siteInfo as any).contactEmail || ''}
+                                                    onChange={(e) => setSiteInfo({ ...siteInfo, contactEmail: e.target.value } as any)}
+                                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+                                                />
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </section>
                             </div>
                         </div>
                     )}
-                </div>
 
-                {/* Live Preview Sidebar */}
-                <div className="lg:col-span-1">
-                    <div className="sticky top-8 space-y-4">
-                        <div className="flex items-center justify-between text-sm">
-                            <h3 className="font-bold text-slate-900">Live Preview</h3>
-                            <div className="flex gap-2 bg-slate-100 p-1 rounded-lg">
-                                <button className="p-1.5 rounded bg-white shadow text-slate-900"><Monitor size={14} /></button>
-                                <button className="p-1.5 rounded text-slate-400 hover:text-slate-600"><Smartphone size={14} /></button>
-                            </div>
-                        </div>
-
-                        {/* Dynamic Preview Frame */}
-                        <div className="border-[8px] border-slate-900 rounded-[2.5rem] overflow-hidden shadow-2xl aspect-[9/19] relative transition-colors duration-300" style={{ backgroundColor: colors.background }}>
-                            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/3 h-6 bg-slate-900 rounded-b-xl z-20"></div>
-
-                            <div className="h-full w-full overflow-y-auto relative custom-scrollbar">
-                                {/* Navbar Mock */}
-                                <div className="p-4 flex items-center justify-between sticky top-0 z-10 backdrop-blur-md bg-black/10">
-                                    {assets.logoUrl ? (
-                                        <img src={assets.logoUrl} className="h-6 object-contain" alt="Logo" />
-                                    ) : (
-                                        <div className="w-8 h-8 rounded bg-white/10"></div>
-                                    )}
-                                    <div className="w-6 h-6 rounded-full bg-white/20"></div>
-                                </div>
-
-                                {/* Hero Mock */}
-                                <div className="px-4 py-8 text-center relative">
-                                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[200px] rounded-full blur-[60px] opacity-30 pointer-events-none" style={{ background: `linear-gradient(to bottom, ${colors.primary}, transparent)` }}></div>
-                                    <h2 className="text-xl font-black mb-2 leading-tight" style={{ color: colors.text }}>
-                                        {siteInfo.title || "Your Event Title"}
-                                    </h2>
-                                    <p className="text-[10px] opacity-60 mb-6 line-clamp-2" style={{ color: colors.text }}>
-                                        {siteInfo.description || "Event description goes here looking premium and nice."}
-                                    </p>
-                                    <div className="inline-block px-6 py-2 rounded-full text-xs font-bold text-white shadow-lg shadow-white/10" style={{ backgroundColor: colors.primary }}>
-                                        Get Tickets
-                                    </div>
-                                </div>
-
-                                {/* Cards Mock */}
-                                <div className="px-4 pb-4 space-y-3">
-                                    {[1, 2].map(i => (
-                                        <div key={i} className="rounded-2xl border border-white/5 bg-white/5 p-3 overflow-hidden">
-                                            <div className="h-24 rounded-xl bg-white/5 mb-3"></div>
-                                            <div className="h-3 w-2/3 rounded bg-white/10 mb-2"></div>
-                                            <div className="flex justify-between items-center mt-3">
-                                                <div className="h-2 w-1/3 rounded bg-white/10"></div>
-                                                <div className="px-3 py-1 rounded-lg text-[10px] font-bold text-white" style={{ backgroundColor: colors.primary }}>Buy</div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
