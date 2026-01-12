@@ -6,67 +6,68 @@ interface FooterProps {
     tenant: any;
     colors: any;
     fonts: any;
+    isLight?: boolean;
 }
 
-export default function FooterSection({ tenant, colors, fonts }: FooterProps) {
+export default function FooterSection({ tenant, colors, fonts, isLight }: FooterProps) {
     return (
-        <footer className="py-20 px-6 border-t border-white/10 bg-slate-950" style={{ fontFamily: fonts.body }}>
+        <footer className={`py-20 px-6 border-t ${isLight ? 'bg-white border-slate-100' : 'bg-slate-950 border-white/10'}`} style={{ fontFamily: fonts.body }}>
             <div className="container mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
                     <div className="lg:col-span-1">
                         <div className="flex items-center gap-3 mb-6">
-                            <div className="p-2 rounded-xl bg-white/5 border border-white/10">
+                            <div className={`p-2 rounded-xl border ${isLight ? 'bg-slate-50 border-slate-200' : 'bg-white/5 border-white/10'}`}>
                                 <Ticket className="text-emerald-500" />
                             </div>
-                            <span className="text-2xl font-black text-white tracking-tighter" style={{ fontFamily: fonts.heading }}>
+                            <span className={`text-2xl font-black tracking-tighter ${isLight ? 'text-slate-900' : 'text-white'}`} style={{ fontFamily: fonts.heading }}>
                                 {tenant.name}
                             </span>
                         </div>
-                        <p className="text-slate-500 text-sm leading-relaxed mb-6">
+                        <p className={`text-sm leading-relaxed mb-6 ${isLight ? 'text-slate-600' : 'text-slate-500'}`}>
                             Building better event experiences for everyone. Join us for our upcoming events and be part of the community.
                         </p>
                         <div className="flex items-center gap-4">
-                            <a href="#" className="p-2 rounded-lg bg-white/5 text-slate-400 hover:text-white hover:bg-white/10 transition-all"><Facebook size={18} /></a>
-                            <a href="#" className="p-2 rounded-lg bg-white/5 text-slate-400 hover:text-white hover:bg-white/10 transition-all"><Twitter size={18} /></a>
-                            <a href="#" className="p-2 rounded-lg bg-white/5 text-slate-400 hover:text-white hover:bg-white/10 transition-all"><Instagram size={18} /></a>
+                            <a href="#" className={`p-2 rounded-lg transition-all ${isLight ? 'bg-slate-50 text-slate-400 hover:text-slate-900 hover:bg-slate-100' : 'bg-white/5 text-slate-400 hover:text-white hover:bg-white/10'}`}><Facebook size={18} /></a>
+                            <a href="#" className={`p-2 rounded-lg transition-all ${isLight ? 'bg-slate-50 text-slate-400 hover:text-slate-900 hover:bg-slate-100' : 'bg-white/5 text-slate-400 hover:text-white hover:bg-white/10'}`}><Twitter size={18} /></a>
+                            <a href="#" className={`p-2 rounded-lg transition-all ${isLight ? 'bg-slate-50 text-slate-400 hover:text-slate-900 hover:bg-slate-100' : 'bg-white/5 text-slate-400 hover:text-white hover:bg-white/10'}`}><Instagram size={18} /></a>
                         </div>
                     </div>
 
                     <div>
-                        <h4 className="font-bold text-white mb-6 uppercase tracking-widest text-xs">Event Info</h4>
-                        <ul className="space-y-4 text-sm text-slate-500">
-                            <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
-                            <li><a href="#" className="hover:text-white transition-colors">Terms of Service</a></li>
-                            <li><a href="#" className="hover:text-white transition-colors">Refund Policy</a></li>
-                            <li><a href="#" className="hover:text-white transition-colors">Safety Guide</a></li>
+                        <h4 className={`font-bold mb-6 uppercase tracking-widest text-xs ${isLight ? 'text-slate-900' : 'text-white'}`}>Event Info</h4>
+                        <ul className={`space-y-4 text-sm ${isLight ? 'text-slate-500' : 'text-slate-500'}`}>
+                            <li><a href="#" className={`transition-colors ${isLight ? 'hover:text-slate-900' : 'hover:text-white'}`}>Privacy Policy</a></li>
+                            <li><a href="#" className={`transition-colors ${isLight ? 'hover:text-slate-900' : 'hover:text-white'}`}>Terms of Service</a></li>
+                            <li><a href="#" className={`transition-colors ${isLight ? 'hover:text-slate-900' : 'hover:text-white'}`}>Refund Policy</a></li>
+                            <li><a href="#" className={`transition-colors ${isLight ? 'hover:text-slate-900' : 'hover:text-white'}`}>Safety Guide</a></li>
                         </ul>
                     </div>
 
                     <div>
-                        <h4 className="font-bold text-white mb-6 uppercase tracking-widest text-xs">Support</h4>
-                        <ul className="space-y-4 text-sm text-slate-500">
-                            <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
-                            <li><a href="#" className="hover:text-white transition-colors">Contact Us</a></li>
-                            <li><a href="#" className="hover:text-white transition-colors">Ticket Support</a></li>
-                            <li><a href="#" className="hover:text-white transition-colors">Venue Info</a></li>
+                        <h4 className={`font-bold mb-6 uppercase tracking-widest text-xs ${isLight ? 'text-slate-900' : 'text-white'}`}>Support</h4>
+                        <ul className={`space-y-4 text-sm ${isLight ? 'text-slate-500' : 'text-slate-500'}`}>
+                            <li><a href="#" className={`transition-colors ${isLight ? 'hover:text-slate-900' : 'hover:text-white'}`}>Help Center</a></li>
+                            <li><a href="#" className={`transition-colors ${isLight ? 'hover:text-slate-900' : 'hover:text-white'}`}>Contact Us</a></li>
+                            <li><a href="#" className={`transition-colors ${isLight ? 'hover:text-slate-900' : 'hover:text-white'}`}>Ticket Support</a></li>
+                            <li><a href="#" className={`transition-colors ${isLight ? 'hover:text-slate-900' : 'hover:text-white'}`}>Venue Info</a></li>
                         </ul>
                     </div>
 
                     <div>
-                        <h4 className="font-bold text-white mb-6 uppercase tracking-widest text-xs">Stay Updated</h4>
-                        <p className="text-sm text-slate-500 mb-6">Get notified about upcoming events and special offers.</p>
+                        <h4 className={`font-bold mb-6 uppercase tracking-widest text-xs ${isLight ? 'text-slate-900' : 'text-white'}`}>Stay Updated</h4>
+                        <p className={`text-sm mb-6 ${isLight ? 'text-slate-600' : 'text-slate-500'}`}>Get notified about upcoming events and special offers.</p>
                         <div className="flex gap-2">
                             <input
                                 type="email"
                                 placeholder="Email address"
-                                className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-emerald-500 flex-1"
+                                className={`border rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-emerald-500 flex-1 ${isLight ? 'bg-slate-50 border-slate-200 text-slate-900 shadow-inner' : 'bg-white/5 border-white/10 text-white'}`}
                             />
-                            <button className="px-4 py-2 rounded-xl bg-emerald-600 text-white font-bold text-sm">Join</button>
+                            <button className="px-4 py-2 rounded-xl bg-emerald-600 text-white font-bold text-sm hover:bg-emerald-700 transition-colors">Join</button>
                         </div>
                     </div>
                 </div>
 
-                <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-600 font-bold uppercase tracking-widest">
+                <div className={`pt-8 border-t flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-bold uppercase tracking-widest ${isLight ? 'border-slate-100 text-slate-400' : 'border-white/5 text-slate-600'}`}>
                     <p>© 2026 {tenant.name}. All rights reserved.</p>
                     <p>Powered by TicketBD Engine</p>
                 </div>

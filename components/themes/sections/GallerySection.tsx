@@ -4,9 +4,10 @@ interface GalleryProps {
     content: any;
     colors: any;
     fonts: any;
+    isLight?: boolean;
 }
 
-export default function GallerySection({ content, colors, fonts }: GalleryProps) {
+export default function GallerySection({ content, colors, fonts, isLight }: GalleryProps) {
     const images = Array.isArray(content) ? content : (content.gallery || []);
 
     if (images.length === 0) return null;
@@ -42,8 +43,8 @@ export default function GallerySection({ content, colors, fonts }: GalleryProps)
                     ))}
                     {/* Mock Empty States IF less than 4 images */}
                     {images.length < 4 && Array.from({ length: 4 - images.length }).map((_, i) => (
-                        <div key={`empty-${i}`} className="aspect-square bg-white/5 rounded-3xl border border-white/5 flex items-center justify-center">
-                            <span className="text-slate-800 font-bold opacity-30 tracking-tighter text-4xl">GALLERY</span>
+                        <div key={`empty-${i}`} className={`aspect-square rounded-3xl border flex items-center justify-center ${isLight ? 'bg-slate-100 border-slate-200' : 'bg-white/5 border-white/5'}`}>
+                            <span className={`font-bold opacity-30 tracking-tighter text-4xl ${isLight ? 'text-slate-400' : 'text-slate-800'}`}>GALLERY</span>
                         </div>
                     ))}
                 </div>

@@ -29,12 +29,14 @@ export default function DynamicThemeRenderer({ tenant, event, theme, customConte
     const fonts = theme.defaultProperties.fonts;
     const structure = theme.templateStructure;
 
-    // Combine theme default content with event customized content
     const content = {
         ...theme.defaultContent,
         ...(event?.themeContent || {}),
         ...(customContent || {})
     };
+
+    // Helper to determine if background is light (for section styling)
+    const isLight = colors.background.toLowerCase() === '#ffffff' || colors.background.toLowerCase() === '#f8fafc';
 
     // Sort sections by order
     const sections = Object.entries(structure.sections)
@@ -42,7 +44,7 @@ export default function DynamicThemeRenderer({ tenant, event, theme, customConte
         .sort(([_, a]: any, [__, b]: any) => a.order - b.order);
 
     const renderSection = (name: string, sectionConfig: any) => {
-        const props = { content: content[name] || {}, colors, fonts, category: theme.category, event };
+        const props = { content: content[name] || {}, colors, fonts, category: theme.category, event, isLight };
 
         switch (name) {
             case 'hero': return <HeroSection key={name} {...props} />;
@@ -65,7 +67,7 @@ export default function DynamicThemeRenderer({ tenant, event, theme, customConte
         >
             {sections.map(([name, config]) => renderSection(name, config))}
 
-            <FooterSection tenant={tenant} colors={colors} fonts={fonts} />
+            <FooterSection tenant={tenant} colors={colors} fonts={fonts} isLight={isLight} />
         </div>
     );
 }

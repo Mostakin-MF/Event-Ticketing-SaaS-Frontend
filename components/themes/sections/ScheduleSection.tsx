@@ -1,28 +1,44 @@
 'use client';
 
-import { Clock, Star } from 'lucide-react';
+import { Clock, Star, Terminal } from 'lucide-react';
 
 interface ScheduleProps {
     content: any;
     colors: any;
     fonts: any;
+    isLight?: boolean;
+    category?: string;
 }
 
-export default function ScheduleSection({ content, colors, fonts }: ScheduleProps) {
+export default function ScheduleSection({ content, colors, fonts, isLight, category }: ScheduleProps) {
     const schedule = Array.isArray(content) ? content : (content.schedule || []);
+    const isTech = category === 'Tech Conference';
 
     return (
-        <section className="py-24 px-6 relative">
-            <div className="container mx-auto">
+        <section className={`py-24 px-6 relative ${isTech ? 'bg-black/40' : ''}`}>
+            {isTech && (
+                <div className="absolute inset-0 opacity-10 pointer-events-none"
+                    style={{
+                        backgroundImage: `radial-gradient(${colors.primary} 1px, transparent 1px)`,
+                        backgroundSize: '30px 30px'
+                    }}
+                ></div>
+            )}
+            <div className="container mx-auto relative z-10">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
                     <div className="max-w-2xl">
-                        <span className="text-sm font-bold uppercase tracking-widest mb-4 block" style={{ color: colors.secondary }}>Timeline</span>
+                        <div className="flex items-center gap-2 mb-4">
+                            {isTech && <Terminal size={16} style={{ color: colors.secondary }} />}
+                            <span className="text-sm font-bold uppercase tracking-widest block" style={{ color: colors.secondary }}>
+                                {isTech ? 'STDOUT_TIMELINE' : 'Timeline'}
+                            </span>
+                        </div>
                         <h2 className="text-4xl md:text-5xl font-black" style={{ color: colors.text, fontFamily: fonts.heading }}>
-                            Event Schedule
+                            {isTech ? 'Event_Schedule.log' : 'Event Schedule'}
                         </h2>
                     </div>
-                    <p className="text-slate-400 max-w-sm" style={{ fontFamily: fonts.body }}>
-                        Don't miss a single moment of the action. Here is our planned timeline for the event.
+                    <p className={`max-w-sm ${isLight ? 'text-slate-600' : 'text-slate-400'}`} style={{ fontFamily: fonts.body }}>
+                        {isTech ? 'System initialization complete. Reviewing event execution cycle.' : "Don't miss a single moment of the action. Here is our planned timeline for the event."}
                     </p>
                 </div>
 
@@ -30,32 +46,37 @@ export default function ScheduleSection({ content, colors, fonts }: ScheduleProp
                     {schedule.map((item: any, index: number) => (
                         <div
                             key={index}
-                            className="group flex flex-col md:flex-row gap-6 p-8 rounded-3xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all items-start md:items-center"
+                            className={`group flex flex-col md:flex-row gap-6 p-8 rounded-3xl border transition-all items-start md:items-center ${isLight
+                                ? 'border-slate-200 bg-white hover:shadow-lg'
+                                : `border-white/10 bg-white/5 hover:bg-white/10 ${isTech ? 'hover:border-green-500/50' : ''}`
+                                }`}
                         >
                             <div className="flex items-center gap-4 shrink-0">
                                 <div
-                                    className="w-12 h-12 rounded-full flex items-center justify-center border-2"
+                                    className={`w-12 h-12 rounded-full flex items-center justify-center border-2 ${isTech ? 'rounded-lg' : ''}`}
                                     style={{ borderColor: `${colors.primary}40`, color: colors.primary }}
                                 >
                                     <Clock size={20} />
                                 </div>
-                                <span className="text-2xl font-black" style={{ color: colors.text }}>{item.time}</span>
+                                <span className={`text-2xl font-black ${isTech ? 'font-mono' : ''}`} style={{ color: colors.text }}>{item.time}</span>
                             </div>
 
-                            <div className="h-px flex-1 bg-white/10 hidden md:block"></div>
+                            <div className={`h-px flex-1 hidden md:block ${isLight ? 'bg-slate-100' : 'bg-white/10'}`}></div>
 
                             <div className="flex-1">
-                                <h3 className="text-2xl font-bold mb-2 group-hover:text-emerald-400 transition-colors" style={{ color: colors.text, fontFamily: fonts.heading }}>
-                                    {item.title}
+                                <h3 className={`text-2xl font-bold mb-2 transition-colors ${isTech ? 'font-mono' : ''}`} style={{ color: colors.text, fontFamily: fonts.heading }}>
+                                    {isTech && '> '}{item.title}
                                 </h3>
-                                <p className="text-slate-400" style={{ fontFamily: fonts.body }}>
+                                <p className={isLight ? 'text-slate-600' : 'text-slate-400'} style={{ fontFamily: fonts.body }}>
                                     {item.description}
                                 </p>
                             </div>
 
-                            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/5">
+                            <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border ${isLight ? 'bg-slate-50 border-slate-100' : 'bg-white/5 border-white/5'} ${isTech ? 'rounded-lg border-green-500/20' : ''}`}>
                                 <Star size={14} className="text-amber-500" />
-                                <span className="text-xs font-bold uppercase tracking-widest text-slate-300">Main Stage</span>
+                                <span className={`text-xs font-bold uppercase tracking-widest ${isLight ? 'text-slate-500' : 'text-slate-300'}`}>
+                                    {isTech ? 'MAIN_PROCESS' : 'Main Stage'}
+                                </span>
                             </div>
                         </div>
                     ))}

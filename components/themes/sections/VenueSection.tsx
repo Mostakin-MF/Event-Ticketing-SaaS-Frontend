@@ -6,13 +6,14 @@ interface VenueProps {
     content: any;
     colors: any;
     fonts: any;
+    isLight?: boolean;
 }
 
-export default function VenueSection({ content, colors, fonts }: VenueProps) {
+export default function VenueSection({ content, colors, fonts, isLight }: VenueProps) {
     if (!content) return null;
 
     return (
-        <section className="py-24 px-6 relative bg-black/20">
+        <section className={`py-24 px-6 relative ${isLight ? 'bg-white' : 'bg-black/20'}`}>
             <div className="container mx-auto">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                     <div className="space-y-8">
@@ -32,8 +33,8 @@ export default function VenueSection({ content, colors, fonts }: VenueProps) {
                                     <MapPin size={24} />
                                 </div>
                                 <div>
-                                    <h4 className="font-bold text-white mb-1">Address</h4>
-                                    <p className="text-slate-400">{content.address || 'Location details coming soon.'}</p>
+                                    <h4 className={`font-bold mb-1 ${isLight ? 'text-slate-900' : 'text-white'}`}>Address</h4>
+                                    <p className={isLight ? 'text-slate-600' : 'text-slate-400'}>{content.address || 'Location details coming soon.'}</p>
                                 </div>
                             </div>
 
@@ -45,8 +46,8 @@ export default function VenueSection({ content, colors, fonts }: VenueProps) {
                                     <Navigation size={24} />
                                 </div>
                                 <div>
-                                    <h4 className="font-bold text-white mb-1">Getting There</h4>
-                                    <p className="text-slate-400">{content.directions || 'Multiple public transit options available.'}</p>
+                                    <h4 className={`font-bold mb-1 ${isLight ? 'text-slate-900' : 'text-white'}`}>Getting There</h4>
+                                    <p className={isLight ? 'text-slate-600' : 'text-slate-400'}>{content.directions || 'Multiple public transit options available.'}</p>
                                 </div>
                             </div>
 
@@ -58,8 +59,8 @@ export default function VenueSection({ content, colors, fonts }: VenueProps) {
                                     <Car size={24} />
                                 </div>
                                 <div>
-                                    <h4 className="font-bold text-white mb-1">Parking</h4>
-                                    <p className="text-slate-400">{content.parking || 'On-site parking available for early arrivals.'}</p>
+                                    <h4 className={`font-bold mb-1 ${isLight ? 'text-slate-900' : 'text-white'}`}>Parking</h4>
+                                    <p className={isLight ? 'text-slate-600' : 'text-slate-400'}>{content.parking || 'On-site parking available for early arrivals.'}</p>
                                 </div>
                             </div>
                         </div>
@@ -75,8 +76,8 @@ export default function VenueSection({ content, colors, fonts }: VenueProps) {
 
                     <div className="relative group grayscale hover:grayscale-0 transition-all duration-700">
                         {/* Mock Map View */}
-                        <div className="absolute -inset-2 bg-gradient-to-tr from-emerald-500/10 to-blue-500/10 rounded-[2.5rem] blur-xl"></div>
-                        <div className="relative aspect-video lg:aspect-square rounded-[2rem] overflow-hidden border border-white/10 bg-slate-800">
+                        <div className={`absolute -inset-2 bg-gradient-to-tr rounded-[2.5rem] blur-xl opacity-20 ${isLight ? 'from-emerald-500/20 to-blue-500/20' : 'from-emerald-500/10 to-blue-500/10'}`}></div>
+                        <div className={`relative aspect-video lg:aspect-square rounded-[2rem] overflow-hidden border ${isLight ? 'border-slate-200 bg-slate-50' : 'border-white/10 bg-slate-800'}`}>
                             <div className="absolute inset-0 flex items-center justify-center">
                                 <div className="text-center">
                                     <MapPin size={48} className="mx-auto mb-4 animate-bounce" style={{ color: colors.primary }} />
