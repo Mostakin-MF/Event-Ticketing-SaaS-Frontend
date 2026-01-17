@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { tenantAdminService, CreateEventDto, EventStatus } from '@/services/tenantAdminService';
 import Link from 'next/link';
-import { ArrowLeft, Calendar, MapPin, Save, Type, Trash2, AlertCircle, Palette, Settings, ExternalLink, Ticket, Users, DollarSign, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Calendar, MapPin, Save, Type, Trash2, AlertCircle, Palette, Lock, Settings, ExternalLink, Ticket, Users, DollarSign, CheckCircle2, ShoppingBag } from 'lucide-react';
 
 const generateSlug = (text: string): string => {
     return text
@@ -44,14 +44,25 @@ export default function EditEventPage() {
     // Theme selection state
     const [fetchingThemes, setFetchingThemes] = useState(true);
     const [themes, setThemes] = useState<any[]>([]);
+    const [purchasedThemes, setPurchasedThemes] = useState<any[]>([]);
     const [filterPrice, setFilterPrice] = useState<'all' | 'free' | 'premium'>('all');
     const [filterCategory, setFilterCategory] = useState<string>('all');
 
     // Derived state for categories
     const categories = ['all', ...Array.from(new Set(themes.map(t => t.category || 'General')))];
 
-    // Filtered themes
+    // Helper to check ownership
+    const isOwned = (themeId: string) => {
+        const theme = themes.find(t => t.id === themeId);
+        if (!theme) return false;
+        if (!theme.isPremium || theme.price === 0) return true;
+        return purchasedThemes.some(p => p.themeId === themeId && p.status === 'active');
+    };
+
+    // Filtered themes (Only show OWNED themes)
     const filteredThemes = themes.filter(theme => {
+        if (!isOwned(theme.id)) return false;
+
         const matchesPrice =
             filterPrice === 'all' ? true :
                 filterPrice === 'free' ? !theme.isPremium :
@@ -99,10 +110,15 @@ export default function EditEventPage() {
                     price: eventData.price || 0,
                 });
 
-                // Fetch themes
-                const themeData = await tenantAdminService.getAvailableThemes();
+                // Fetch themes and purchases
+                const [themeData, purchasedData] = await Promise.all([
+                    tenantAdminService.getAvailableThemes(),
+                    tenantAdminService.getPurchasedThemes()
+                ]);
+
                 const themeList = Array.isArray(themeData) ? themeData : (themeData as any).data || [];
                 setThemes(themeList);
+                setPurchasedThemes(purchasedData);
 
                 setError(null);
             } catch (err: any) {
@@ -125,10 +141,6 @@ export default function EditEventPage() {
             setFormData(prev => ({
                 ...prev,
                 [name]: value,
-                // Only update slug if it looks like it was auto-generated from the old name (simple heuristic)
-                // For edit page, typically we might NOT want to auto-update slug to avoid breaking links, 
-                // but let's keep it consistent with create for now or just allow manual edit. 
-                // User can manually edit slug if needed.
             }));
         } else if (name === 'status') {
             setFormData(prev => ({ ...prev, status: value as EventStatus }));
@@ -140,6 +152,12 @@ export default function EditEventPage() {
     };
 
     const handleThemeSelect = (themeId: string) => {
+        if (!isOwned(themeId)) {
+            setError("You don't own this premium theme yet. Please buy it from the Themes Marketplace.");
+            // Scroll to the error message (approx location or use a ref)
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            return;
+        }
         setFormData(prev => ({ ...prev, themeId }));
     };
 
@@ -439,54 +457,82 @@ export default function EditEventPage() {
                             </div>
                         ) : (
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                {filteredThemes.map((theme) => (
-                                    <div
-                                        key={theme.id}
-                                        onClick={() => handleThemeSelect(theme.id)}
-                                        className={`group relative cursor-pointer rounded-xl border-2 transition-all duration-200 overflow-hidden flex flex-col ${formData.themeId === theme.id
-                                            ? 'border-violet-600 bg-violet-50/50 ring-2 ring-violet-200'
-                                            : 'border-slate-100 hover:border-slate-300 hover:shadow-md bg-white'
-                                            }`}
-                                    >
-                                        <div className="aspect-video bg-slate-200 relative overflow-hidden">
-                                            {theme.thumbnailUrl ? (
-                                                <img
-                                                    src={theme.thumbnailUrl}
-                                                    alt={theme.name}
-                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                                />
-                                            ) : (
-                                                <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 bg-slate-100">
-                                                    <Palette size={16} className="mb-1 opacity-50" />
-                                                    <span className="text-[10px] font-semibold">No Preview</span>
-                                                </div>
-                                            )}
+                                {filteredThemes.map((theme) => {
+                                    const owned = isOwned(theme.id);
+                                    return (
+                                        <div
+                                            key={theme.id}
+                                            onClick={() => handleThemeSelect(theme.id)}
+                                            className={`group relative cursor-pointer rounded-xl border-2 transition-all duration-200 overflow-hidden flex flex-col ${formData.themeId === theme.id
+                                                ? 'border-violet-600 bg-violet-50/50 ring-2 ring-violet-200'
+                                                : !owned
+                                                    ? 'border-slate-100 opacity-60 grayscale-[0.3]'
+                                                    : 'border-slate-100 hover:border-slate-300 hover:shadow-md bg-white'
+                                                }`}
+                                        >
+                                            <div className="aspect-video bg-slate-200 relative overflow-hidden">
+                                                {theme.thumbnailUrl ? (
+                                                    <img
+                                                        src={theme.thumbnailUrl}
+                                                        alt={theme.name}
+                                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                    />
+                                                ) : (
+                                                    <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 bg-slate-100">
+                                                        <Palette size={16} className="mb-1 opacity-50" />
+                                                        <span className="text-[10px] font-semibold">No Preview</span>
+                                                    </div>
+                                                )}
 
-                                            <div className="absolute top-2 right-2">
-                                                <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold backdrop-blur-md shadow-sm ${theme.isPremium
-                                                    ? 'bg-amber-100/90 text-amber-700 border border-amber-200/50'
-                                                    : 'bg-white/90 text-slate-700 border border-slate-200/50'
-                                                    }`}>
-                                                    {theme.isPremium ? `৳${theme.price}` : 'Free'}
-                                                </span>
+                                                <div className="absolute top-2 right-2 flex flex-col items-end gap-1">
+                                                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold backdrop-blur-md shadow-sm border ${theme.isPremium
+                                                        ? 'bg-amber-100/90 text-amber-700 border-amber-200/50'
+                                                        : 'bg-white/90 text-slate-700 border-slate-200/50'
+                                                        }`}>
+                                                        {theme.isPremium ? `৳${theme.price}` : 'Free'}
+                                                    </span>
+                                                    {owned && theme.isPremium && (
+                                                        <span className="px-1.5 py-0.5 rounded text-[8px] font-black bg-emerald-500 text-white uppercase tracking-tighter shadow-sm border border-emerald-400/50">
+                                                            Purchased
+                                                        </span>
+                                                    )}
+                                                </div>
+
+                                                {!owned && (
+                                                    <div className="absolute inset-0 bg-slate-900/40 flex items-center justify-center backdrop-blur-[1px]">
+                                                        <div className="bg-white/90 text-slate-900 rounded-full p-2 shadow-xl border border-white">
+                                                            <Lock size={20} className="animate-pulse" />
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {formData.themeId === theme.id && (
+                                                    <div className="absolute inset-0 bg-violet-900/40 flex items-center justify-center backdrop-blur-[1px]">
+                                                        <div className="bg-white text-violet-700 rounded-full p-2 shadow-xl">
+                                                            <CheckCircle2 size={24} fill="currentColor" className="text-white" />
+                                                        </div>
+                                                    </div>
+                                                )}
                                             </div>
 
-                                            {formData.themeId === theme.id && (
-                                                <div className="absolute inset-0 bg-violet-900/40 flex items-center justify-center backdrop-blur-[1px]">
-                                                    <div className="bg-white text-violet-700 rounded-full p-2 shadow-xl">
-                                                        <CheckCircle2 size={24} fill="currentColor" className="text-white" />
-                                                    </div>
-                                                </div>
-                                            )}
+                                            <div className="p-3">
+                                                <h3 className="font-bold text-xs text-slate-900 group-hover:text-violet-700 truncate">{theme.name}</h3>
+                                            </div>
                                         </div>
-
-                                        <div className="p-3">
-                                            <h3 className="font-bold text-xs text-slate-900 group-hover:text-violet-700 truncate">{theme.name}</h3>
-                                        </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         )}
+
+                        <div className="mt-4 pt-4 border-t border-slate-50 flex items-center justify-center">
+                            <Link
+                                href="/tenant-admin/themes"
+                                className="text-[10px] font-bold text-violet-600 hover:text-violet-800 flex items-center gap-1 transition-colors uppercase tracking-widest"
+                            >
+                                <ShoppingBag size={12} />
+                                Get more premium themes from Marketplace
+                            </Link>
+                        </div>
                     </div>
                 </div>
 

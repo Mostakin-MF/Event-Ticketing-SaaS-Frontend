@@ -1,26 +1,13 @@
-"use client";
+'use client';
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
-    Building2,
-    Users,
-    TrendingUp,
-    AlertCircle,
-    ArrowUpRight,
-    ArrowDownRight,
-    Activity,
-    CreditCard,
-    RefreshCw,
-    DollarSign,
-    UserPlus,
-    Settings,
-    Palette,
-    Shield,
-    Clock,
-    CheckCircle2,
-    XCircle,
-    Eye
+    Building2, Users, TrendingUp, AlertCircle,
+    ArrowUpRight, ArrowDownRight, Activity,
+    CreditCard, RefreshCw, DollarSign,
+    Settings, Palette, Shield, Clock,
+    CheckCircle2, Eye, Zap, Layers
 } from 'lucide-react';
 import { adminService, ActivityLog } from '@/services/adminService';
 
@@ -28,7 +15,6 @@ export default function AdminDashboard() {
     const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
     const [stats, setStats] = useState<any>(null);
     const [tenants, setTenants] = useState<any[]>([]);
-    const [users, setUsers] = useState<any[]>([]);
     const [payments, setPayments] = useState<any[]>([]);
     const [themes, setThemes] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -36,37 +22,37 @@ export default function AdminDashboard() {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const [logsResponse, statsData, tenantsResponse, usersResponse, paymentsResponse, themesResponse] = await Promise.all([
+            const [logsResponse, statsData, tenantsResponse, paymentsResponse, themesResponse] = await Promise.all([
                 adminService.getAllActivityLogs().catch((err) => {
-                    if (err?.response?.status !== 403) console.error('Activity logs error:', err);
+                    const status = err?.response?.status;
+                    if (status !== 401 && status !== 403) console.error('Activity logs error:', err);
                     return { data: [] };
                 }),
                 adminService.getDashboardStats().catch((err) => {
-                    if (err?.response?.status !== 403) console.error('Stats error:', err);
-                    return { activeTenants: 0, totalUsers: 0, totalRevenue: 0, systemHealth: 'Unknown' };
+                    const status = err?.response?.status;
+                    if (status !== 401 && status !== 403) console.error('Stats error:', err);
+                    return { activeTenants: 0, totalUsers: 0, totalRevenue: 0, systemHealth: 'Healthy' };
                 }),
-                adminService.getAllTenants({ limit: 10 }).catch((err) => {
-                    if (err?.response?.status !== 403) console.error('Tenants error:', err);
+                adminService.getAllTenants({ limit: 5 }).catch((err) => {
+                    const status = err?.response?.status;
+                    if (status !== 401 && status !== 403) console.error('Tenants error:', err);
                     return { data: [] };
                 }),
-                adminService.getAllUsers({ limit: 10 }).catch((err) => {
-                    if (err?.response?.status !== 403) console.error('Users error:', err);
-                    return { data: [] };
-                }),
-                adminService.getAllPayments({ limit: 10 }).catch((err) => {
-                    if (err?.response?.status !== 403) console.error('Payments error:', err);
+                adminService.getAllPayments({ limit: 5 }).catch((err) => {
+                    const status = err?.response?.status;
+                    if (status !== 401 && status !== 403) console.error('Payments error:', err);
                     return { data: [] };
                 }),
                 adminService.getAllThemes().catch((err) => {
-                    if (err?.response?.status !== 403) console.error('Themes error:', err);
+                    const status = err?.response?.status;
+                    if (status !== 401 && status !== 403) console.error('Themes error:', err);
                     return { data: [] };
                 })
             ]);
 
-            setActivityLogs((logsResponse.data || []).slice(0, 8));
+            setActivityLogs((logsResponse.data || []).slice(0, 10));
             setStats(statsData);
             setTenants(Array.isArray(tenantsResponse) ? tenantsResponse : tenantsResponse.data || []);
-            setUsers(Array.isArray(usersResponse) ? usersResponse : usersResponse.data || []);
             setPayments(Array.isArray(paymentsResponse) ? paymentsResponse : paymentsResponse.data || []);
             setThemes(Array.isArray(themesResponse) ? themesResponse : themesResponse.data || []);
         } catch (error) {
@@ -81,415 +67,322 @@ export default function AdminDashboard() {
     }, []);
 
     const formatCurrency = (amount: number | undefined | null) => {
-        if (amount === undefined || amount === null || isNaN(amount)) {
-            return '৳0';
-        }
+        if (amount === undefined || amount === null || isNaN(amount)) return '৳0';
         return `৳${amount.toLocaleString()}`;
     };
 
-    // Calculate additional stats
     const activeThemes = themes.filter((t: any) => t.status === 'active').length;
-    const recentPayments = payments.slice(0, 5);
-    const recentUsers = users.slice(0, 5);
-    const tenantStatusData = tenants.reduce((acc: any, tenant) => {
-        acc[tenant.status] = (acc[tenant.status] || 0) + 1;
-        return acc;
-    }, {});
 
     return (
-        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            {/* Header */}
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-3xl font-black text-slate-900 tracking-tight">
-                        Admin <span className="text-emerald-600">Dashboard</span>
-                    </h1>
-                    <p className="text-slate-500 mt-1">Monitor platform health, tenants, and revenue streams.</p>
+        <div className="max-w-7xl mx-auto space-y-6 lg:space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500 pb-12">
+
+            {/* COMPACT COMMAND HEADER */}
+            <div className="bg-[#022c22] rounded-3xl p-6 lg:p-8 text-white shadow-xl relative overflow-hidden ring-1 ring-white/10">
+                <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-emerald-500/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+
+                <div className="relative z-10 flex flex-col md:flex-row items-center gap-6">
+                    <div className="w-16 h-16 rounded-2xl bg-emerald-500/20 backdrop-blur-xl border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                        <Zap size={32} fill="currentColor" />
+                    </div>
+                    <div className="flex-1 text-center md:text-left space-y-1.5">
+                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-[9px] font-black uppercase tracking-widest border border-emerald-500/30">
+                            <Activity size={10} strokeWidth={3} /> Real-time Ops
+                        </div>
+                        <h1 className="text-2xl font-black tracking-tight leading-none uppercase">Command Center</h1>
+                        <p className="text-emerald-100/60 text-xs font-medium max-w-xl mx-auto md:mx-0">
+                            High-level platform telemetry. Monitoring {stats?.activeTenants || 0} active environments across the TicketBD network.
+                        </p>
+                    </div>
+                    <div className="shrink-0 flex items-center gap-3">
+                        <button
+                            onClick={fetchData}
+                            disabled={loading}
+                            className="bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl px-5 py-3 flex items-center gap-2 transition-all active:scale-95 disabled:opacity-50"
+                        >
+                            <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
+                            <span className="text-[11px] font-black uppercase tracking-widest">{loading ? 'Syncing' : 'Sync Ops'}</span>
+                        </button>
+                    </div>
                 </div>
-                <button
-                    onClick={fetchData}
-                    disabled={loading}
-                    className="flex items-center gap-2 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-semibold text-sm transition-all shadow-lg disabled:opacity-50"
-                >
-                    <RefreshCw size={18} className={loading ? "animate-spin" : ""} />
-                    {loading ? "Syncing..." : "Refresh"}
-                </button>
             </div>
 
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <StatCard
-                    icon={Building2}
-                    label="Active Tenants"
+            {/* PERFORMANCE GRID - PREMIUM CARDS */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+                <PremiumStatCard
+                    label="Platform Tenants"
                     value={stats?.activeTenants || 0}
-                    trend={12.5}
-                    color="blue"
-                    loading={loading}
-                />
-                <StatCard
-                    icon={Users}
-                    label="Platform Users"
-                    value={stats?.totalUsers || 0}
-                    trend={8.3}
-                    color="purple"
-                    loading={loading}
-                />
-                <StatCard
-                    icon={DollarSign}
-                    label="Total Revenue"
-                    value={formatCurrency(stats?.totalRevenue || 0)}
-                    trend={15.7}
+                    trend={+12.5}
+                    icon={Building2}
                     color="emerald"
                     loading={loading}
                 />
-                <StatCard
-                    icon={Palette}
-                    label="Active Themes"
+                <PremiumStatCard
+                    label="Global Network Users"
+                    value={stats?.totalUsers || 0}
+                    trend={+8.3}
+                    icon={Users}
+                    color="teal"
+                    loading={loading}
+                />
+                <PremiumStatCard
+                    label="Accumulated Revenue"
+                    value={formatCurrency(stats?.totalRevenue || 0)}
+                    trend={+15.7}
+                    icon={DollarSign}
+                    color="emerald"
+                    loading={loading}
+                />
+                <PremiumStatCard
+                    label="Operational Themes"
                     value={activeThemes}
                     trend={0}
-                    color="amber"
+                    icon={Palette}
+                    color="slate"
                     loading={loading}
                 />
             </div>
 
-            {/* Quick Actions */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
-                <h2 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
-                    <Settings size={20} className="text-emerald-600" />
-                    Quick Actions
-                </h2>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <QuickActionButton href="/admin/tenants" icon={Building2} label="Manage Tenants" />
-                    <QuickActionButton href="/admin/users" icon={Users} label="Manage Users" />
-                    <QuickActionButton href="/admin/themes" icon={Palette} label="Manage Themes" />
-                    <QuickActionButton href="/admin/settings" icon={Settings} label="Settings" />
-                </div>
-            </div>
+            {/* QUICK COMMANDS & ACTIVITY MATRIX */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
 
-            {/* Charts and Data */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Tenant Status Distribution */}
-                <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
-                    <h2 className="text-lg font-bold text-slate-900 mb-4">Tenant Status</h2>
-                    {loading ? (
-                        <div className="h-48 flex items-center justify-center text-slate-400">Loading...</div>
-                    ) : (
-                        <div className="space-y-3">
-                            {Object.entries(tenantStatusData).map(([status, count]: [string, any]) => (
-                                <div key={status} className="flex items-center gap-3">
-                                    <div className="flex-1">
-                                        <div className="flex items-center justify-between mb-1">
-                                            <span className="text-sm font-medium text-slate-700 capitalize">{status}</span>
-                                            <span className="text-sm font-bold text-slate-900">{count}</span>
-                                        </div>
-                                        <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                                            <div
-                                                className={`h-full rounded-full ${getTenantStatusColor(status)}`}
-                                                style={{ width: `${(count / tenants.length) * 100}%` }}
-                                            />
+                {/* Left Column: Commands & Tenants */}
+                <div className="lg:col-span-8 space-y-6 lg:space-y-8">
+
+                    {/* Glow-Up Quick Actions */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        <IntegratedAction href="/admin/tenants" icon={Building2} label="Tenants" />
+                        <IntegratedAction href="/admin/users" icon={Users} label="Identity" />
+                        <IntegratedAction href="/admin/themes" icon={Palette} label="Themes" />
+                        <IntegratedAction href="/admin/settings" icon={Settings} label="Config" />
+                    </div>
+
+                    {/* Modern Tenant Matrix */}
+                    <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/50 overflow-hidden">
+                        <div className="px-8 py-6 border-b border-slate-50 flex items-center justify-between bg-slate-50/30">
+                            <div>
+                                <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 flex items-center gap-2">
+                                    <Layers size={16} className="text-emerald-500" />
+                                    Recent Tenant Activation
+                                </h3>
+                            </div>
+                            <Link href="/admin/tenants" className="text-[10px] font-black uppercase tracking-widest text-emerald-600 hover:text-emerald-700 flex items-center gap-1.5 transition-all group">
+                                Matrix View <ArrowUpRight size={14} className="group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform" />
+                            </Link>
+                        </div>
+                        <div className="overflow-x-auto">
+                            <table className="w-full">
+                                <thead>
+                                    <tr className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 bg-slate-50/50">
+                                        <th className="px-8 py-4 text-left">Identity</th>
+                                        <th className="px-8 py-4 text-left">Deployment</th>
+                                        <th className="px-8 py-4 text-left">State</th>
+                                        <th className="px-8 py-4 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-50">
+                                    {loading ? (
+                                        [1, 2, 3].map(i => <SkeletonRow key={i} />)
+                                    ) : tenants.slice(0, 5).map((tenant: any) => (
+                                        <tr key={tenant.id} className="group hover:bg-slate-50/50 transition-all">
+                                            <td className="px-8 py-5">
+                                                <div className="font-bold text-slate-900 text-sm">{tenant.name}</div>
+                                                <div className="text-[10px] font-medium text-slate-400">slug: {tenant.slug}</div>
+                                            </td>
+                                            <td className="px-8 py-5">
+                                                <div className="text-[11px] font-bold text-slate-600 uppercase tracking-tighter">
+                                                    {new Date(tenant.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                                                </div>
+                                            </td>
+                                            <td className="px-8 py-5">
+                                                <OperationalBadge status={tenant.status} />
+                                            </td>
+                                            <td className="px-8 py-5 text-right font-black uppercase text-[10px]">
+                                                <Link href={`/admin/tenants/${tenant.id}`} className="inline-flex items-center gap-1.5 text-slate-400 hover:text-emerald-600 transition-colors">
+                                                    Manage <ChevronRight size={12} className="stroke-[3]" />
+                                                </Link>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                    {!loading && tenants.length === 0 && (
+                                        <tr>
+                                            <td colSpan={4} className="px-8 py-10 text-center text-[11px] font-black uppercase text-slate-400 tracking-widest italic">Zero Active Deployments Detected</td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Right Column: Activity & Payments */}
+                <div className="lg:col-span-4 space-y-6 lg:space-y-8">
+
+                    {/* Cinematic Activity Timeline */}
+                    <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white shadow-2xl relative overflow-hidden flex flex-col min-h-[480px]">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-[80px] -mr-32 -mt-32 pointer-events-none"></div>
+
+                        <div className="mb-8 relative z-10 flex items-center justify-between">
+                            <h3 className="text-xs font-black uppercase tracking-[0.25em] flex items-center gap-2.5 text-emerald-400">
+                                <Activity size={14} strokeWidth={3} /> System Pulse
+                            </h3>
+                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]"></div>
+                        </div>
+
+                        <div className="flex-1 space-y-6 overflow-y-auto no-scrollbar relative z-10 pr-2">
+                            {loading ? (
+                                <div className="space-y-4">
+                                    {[1, 2, 3, 4].map(i => <div key={i} className="h-4 bg-white/5 rounded-full animate-pulse w-full"></div>)}
+                                </div>
+                            ) : activityLogs.map((log: any, i: number) => (
+                                <div key={log.id} className="relative pl-6 border-l border-white/10 group">
+                                    <div className={`absolute -left-[4.5px] top-1.5 w-2 h-2 rounded-full transition-all duration-500 ${i === 0 ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)]' : 'bg-slate-700 group-hover:bg-slate-500'}`}></div>
+                                    <div className="space-y-1">
+                                        <p className="text-[11px] font-bold text-slate-200 leading-snug group-hover:text-white transition-colors">
+                                            {log.action}
+                                        </p>
+                                        <div className="flex items-center gap-2 text-[9px] font-black uppercase text-slate-500">
+                                            <Clock size={10} />
+                                            {new Date(log.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • SYSTEM_LOG
                                         </div>
                                     </div>
                                 </div>
                             ))}
-                            {Object.keys(tenantStatusData).length === 0 && (
-                                <p className="text-center text-slate-400 py-8">No tenants yet</p>
+                            {!loading && activityLogs.length === 0 && (
+                                <p className="text-center py-20 text-[10px] font-black uppercase text-slate-600 tracking-widest">Awaiting Pulse...</p>
                             )}
                         </div>
-                    )}
-                </div>
-
-                {/* Recent Payments */}
-                <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
-                    <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-lg font-bold text-slate-900">Recent Payments</h2>
-                        <Link href="/admin/payment" className="text-sm text-emerald-600 hover:text-emerald-700 font-semibold flex items-center gap-1">
-                            View All
-                            <ArrowUpRight size={14} />
-                        </Link>
                     </div>
-                    {loading ? (
-                        <div className="h-48 flex items-center justify-center text-slate-400">Loading...</div>
-                    ) : (
-                        <div className="space-y-2 max-h-80 overflow-y-auto">
-                            {recentPayments.map((payment: any) => (
-                                <div
-                                    key={payment.id}
-                                    className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors"
-                                >
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-semibold text-slate-900">{payment.provider || 'Payment'}</p>
-                                        <p className="text-xs text-slate-500">{new Date(payment.createdAt).toLocaleDateString()}</p>
+
+                    {/* Mini Payment Feed */}
+                    <div className="bg-white rounded-[2rem] p-6 border border-slate-100 shadow-lg shadow-slate-200/40">
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                                <CreditCard size={12} />
+                                Latest Inflow
+                            </h3>
+                            <Link href="/admin/payment" className="text-[9px] font-black uppercase text-emerald-600">Explore</Link>
+                        </div>
+                        <div className="space-y-3">
+                            {loading ? (
+                                [1, 2].map(i => <div key={i} className="h-10 bg-slate-50 rounded-xl animate-pulse"></div>)
+                            ) : payments.slice(0, 3).map((payment: any) => (
+                                <div key={payment.id} className="flex items-center justify-between p-3 rounded-2xl bg-slate-50/50 hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-100">
+                                    <div>
+                                        <div className="text-[11px] font-black text-slate-900 uppercase tracking-tighter">{payment.provider}</div>
+                                        <div className="text-[9px] font-medium text-slate-400">{new Date(payment.createdAt).toLocaleDateString()}</div>
                                     </div>
-                                    <div className="text-right ml-3">
-                                        <p className="text-sm font-bold text-slate-900">{formatCurrency(payment.amount)}</p>
-                                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${getPaymentStatusStyle(payment.status)}`}>
+                                    <div className="text-right">
+                                        <div className="text-xs font-black text-slate-900">{formatCurrency(payment.amount)}</div>
+                                        <span className={`text-[8px] font-black uppercase tracking-widest ${payment.status === 'completed' ? 'text-emerald-500' : 'text-amber-500'}`}>
                                             {payment.status}
                                         </span>
                                     </div>
                                 </div>
                             ))}
-                            {recentPayments.length === 0 && (
-                                <p className="text-center text-slate-400 py-8">No payments yet</p>
-                            )}
                         </div>
-                    )}
-                </div>
-            </div>
-
-            {/* Recent Activity and Users */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Recent Users */}
-                <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
-                    <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-lg font-bold text-slate-900">Recent Users</h2>
-                        <Link href="/admin/users" className="text-sm text-emerald-600 hover:text-emerald-700 font-semibold flex items-center gap-1">
-                            View All
-                            <ArrowUpRight size={14} />
-                        </Link>
                     </div>
-                    {loading ? (
-                        <div className="h-48 flex items-center justify-center text-slate-400">Loading...</div>
-                    ) : (
-                        <div className="space-y-2">
-                            {recentUsers.map((user: any) => (
-                                <div
-                                    key={user.id}
-                                    className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors"
-                                >
-                                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold text-xs">
-                                            {user.email?.[0]?.toUpperCase() || 'U'}
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-semibold text-slate-900 truncate">{user.email}</p>
-                                            <p className="text-xs text-slate-500 capitalize">{user.role || 'user'}</p>
-                                        </div>
-                                    </div>
-                                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${getUserRoleBadge(user.role)}`}>
-                                        {user.role || 'user'}
-                                    </span>
-                                </div>
-                            ))}
-                            {recentUsers.length === 0 && (
-                                <p className="text-center text-slate-400 py-8">No users yet</p>
-                            )}
-                        </div>
-                    )}
-                </div>
-
-                {/* Activity Feed */}
-                <div className="bg-slate-900 rounded-2xl p-5 shadow-sm relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
-
-                    <div className="flex items-center justify-between mb-4 relative z-10">
-                        <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                            <Activity size={20} className="text-emerald-400" />
-                            System Activity
-                        </h2>
-                    </div>
-
-                    {loading ? (
-                        <div className="h-48 flex items-center justify-center text-slate-400">Loading...</div>
-                    ) : (
-                        <div className="space-y-3 max-h-80 overflow-y-auto relative z-10">
-                            {activityLogs.map((log: any, i: number) => (
-                                <div key={log.id} className="relative pl-5 border-l-2 border-slate-700/50">
-                                    <div className={`absolute -left-[5px] top-1.5 w-2 h-2 rounded-full ${i === 0 ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-slate-700'}`}></div>
-                                    <p className="text-sm font-medium text-slate-300 leading-relaxed">
-                                        {log.action}
-                                    </p>
-                                    <span className="text-xs text-slate-500 mt-0.5 block">
-                                        {new Date(log.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                    </span>
-                                </div>
-                            ))}
-                            {activityLogs.length === 0 && (
-                                <p className="text-center text-slate-400 py-8">No recent activity</p>
-                            )}
-                        </div>
-                    )}
-                </div>
-            </div>
-
-            {/* Recent Tenants Table */}
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                <div className="p-5 border-b border-slate-100 flex items-center justify-between">
-                    <div>
-                        <h2 className="text-lg font-bold text-slate-900">Recent Tenants</h2>
-                        <p className="text-xs text-slate-500 mt-0.5">Latest platform partners onboarded</p>
-                    </div>
-                    <Link href="/admin/tenants" className="text-sm text-emerald-600 hover:text-emerald-700 font-semibold flex items-center gap-1">
-                        View All
-                        <ArrowUpRight size={14} />
-                    </Link>
-                </div>
-
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                        <thead className="bg-slate-50 text-xs uppercase font-bold text-slate-500">
-                            <tr>
-                                <th className="px-5 py-3 text-left">Tenant</th>
-                                <th className="px-5 py-3 text-left">Status</th>
-                                <th className="px-5 py-3 text-left">Created</th>
-                                <th className="px-5 py-3 text-right">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100">
-                            {loading ? (
-                                [1, 2, 3].map(i => (
-                                    <tr key={i} className="animate-pulse">
-                                        <td className="px-5 py-4"><div className="h-4 w-32 bg-slate-100 rounded"></div></td>
-                                        <td className="px-5 py-4"><div className="h-6 w-20 bg-slate-100 rounded-full"></div></td>
-                                        <td className="px-5 py-4"><div className="h-4 w-24 bg-slate-100 rounded"></div></td>
-                                        <td className="px-5 py-4"></td>
-                                    </tr>
-                                ))
-                            ) : tenants.slice(0, 5).map((tenant: any) => (
-                                <tr key={tenant.id} className="hover:bg-slate-50 transition-colors">
-                                    <td className="px-5 py-4">
-                                        <div className="font-semibold text-slate-900">{tenant.name}</div>
-                                        <div className="text-xs text-slate-500">@{tenant.slug}</div>
-                                    </td>
-                                    <td className="px-5 py-4">
-                                        <StatusBadge status={tenant.status} />
-                                    </td>
-                                    <td className="px-5 py-4 text-slate-600">
-                                        {new Date(tenant.createdAt).toLocaleDateString()}
-                                    </td>
-                                    <td className="px-5 py-4 text-right">
-                                        <Link
-                                            href={`/admin/tenants/${tenant.id}`}
-                                            className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 flex items-center justify-end gap-1"
-                                        >
-                                            <Eye size={14} />
-                                            View
-                                        </Link>
-                                    </td>
-                                </tr>
-                            ))}
-                            {!loading && tenants.length === 0 && (
-                                <tr>
-                                    <td colSpan={4} className="px-5 py-12 text-center text-slate-400">No tenants found</td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </div>
     );
 }
 
-// Stat Card Component
-type ColorType = 'emerald' | 'blue' | 'amber' | 'purple';
+// SUB-COMPONENTS
 
-interface StatCardProps {
-    icon: React.ComponentType<{ size?: number; className?: string }>;
-    label: string;
-    value: string | number;
-    trend: number;
-    color: ColorType;
-    loading: boolean;
-}
-
-function StatCard({ icon: Icon, label, value, trend, color, loading }: StatCardProps) {
-    const colorClasses: Record<ColorType, string> = {
-        emerald: 'from-emerald-500/10 to-emerald-600/5 text-emerald-600 border-emerald-200',
-        blue: 'from-blue-500/10 to-blue-600/5 text-blue-600 border-blue-200',
-        amber: 'from-amber-500/10 to-amber-600/5 text-amber-600 border-amber-200',
-        purple: 'from-purple-500/10 to-purple-600/5 text-purple-600 border-purple-200',
+function PremiumStatCard({ label, value, trend, icon: Icon, color, loading }: any) {
+    const configs: any = {
+        emerald: "bg-white text-emerald-600 border-emerald-50 shadow-emerald-200/20",
+        teal: "bg-white text-teal-600 border-teal-50 shadow-teal-200/20",
+        slate: "bg-white text-slate-900 border-slate-50 shadow-slate-200/20",
     };
 
     return (
-        <div className={`relative overflow-hidden rounded-2xl border bg-gradient-to-br ${colorClasses[color]} p-5 shadow-sm hover:shadow-md transition-all`}>
+        <div className={`bg-white rounded-[2rem] p-6 border border-slate-100 shadow-xl shadow-slate-200/30 group hover:border-emerald-500/30 transition-all hover:-translate-y-1`}>
             {loading ? (
-                <div className="animate-pulse space-y-3">
-                    <div className="h-8 w-8 bg-slate-200 rounded-lg"></div>
-                    <div className="h-8 w-20 bg-slate-200 rounded"></div>
-                    <div className="h-4 w-24 bg-slate-200 rounded"></div>
+                <div className="space-y-3">
+                    <div className="w-10 h-10 bg-slate-50 rounded-xl animate-pulse"></div>
+                    <div className="h-6 bg-slate-50 rounded-lg animate-pulse w-1/2"></div>
+                    <div className="h-3 bg-slate-50 rounded-lg animate-pulse w-3/4"></div>
                 </div>
             ) : (
                 <>
-                    <div className="flex items-start justify-between mb-3">
-                        <div className={`p-2 rounded-lg bg-white/80 ${colorClasses[color].split(' ')[2]}`}>
-                            <Icon size={20} />
+                    <div className="flex items-start justify-between mb-4">
+                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all group-hover:scale-110 shadow-sm ${configs[color] || configs.slate}`}>
+                            <Icon size={24} strokeWidth={2.5} />
                         </div>
                         {trend !== 0 && (
-                            <div className={`flex items-center gap-1 text-xs font-semibold ${trend > 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                            <div className={`flex items-center gap-1 text-[10px] font-black uppercase tracking-tighter ${trend > 0 ? 'text-emerald-500' : 'text-red-500'}`}>
                                 {trend > 0 ? <TrendingUp size={14} /> : <ArrowDownRight size={14} />}
-                                {Math.abs(trend)}%
+                                {trend}%
                             </div>
                         )}
                     </div>
-                    <div className="text-2xl font-black text-slate-900 mb-1">{value}</div>
-                    <div className="text-xs font-medium text-slate-600">{label}</div>
+                    <div>
+                        <div className="text-2xl font-black text-slate-900 tracking-tight mb-0.5">{value}</div>
+                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{label}</div>
+                    </div>
                 </>
             )}
         </div>
     );
 }
 
-// Quick Action Button Component
-function QuickActionButton({ href, icon: Icon, label }: any) {
+function IntegratedAction({ href, icon: Icon, label }: any) {
     return (
         <Link
             href={href}
-            className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/50 transition-all group"
+            className="flex flex-col items-center justify-center gap-3 p-5 rounded-[2rem] bg-white border border-slate-100 shadow-lg shadow-slate-200/40 hover:border-emerald-500/30 hover:bg-emerald-50/20 transition-all group"
         >
-            <div className="p-2 rounded-lg bg-slate-100 group-hover:bg-emerald-100 transition-colors">
-                <Icon size={20} className="text-slate-600 group-hover:text-emerald-600 transition-colors" />
+            <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-emerald-100 group-hover:text-emerald-600 transition-all">
+                <Icon size={20} />
             </div>
-            <span className="text-xs font-semibold text-slate-700 group-hover:text-emerald-700 transition-colors text-center">
-                {label}
-            </span>
+            <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest group-hover:text-emerald-700 transition-colors">{label}</span>
         </Link>
     );
 }
 
-// Status Badge Component
-function StatusBadge({ status }: { status: string }) {
+function OperationalBadge({ status }: { status: string }) {
     const styles: any = {
-        active: 'bg-emerald-100 text-emerald-700',
-        pending: 'bg-amber-100 text-amber-700',
-        suspended: 'bg-red-100 text-red-700',
-        inactive: 'bg-slate-100 text-slate-700',
+        active: 'bg-emerald-50 text-emerald-600 border-emerald-100',
+        pending: 'bg-amber-50 text-amber-600 border-amber-100',
+        suspended: 'bg-red-50 text-red-600 border-red-100',
     };
-    const style = styles[status?.toLowerCase()] || 'bg-slate-100 text-slate-700';
+    const style = styles[status?.toLowerCase()] || 'bg-slate-50 text-slate-500 border-slate-100';
 
     return (
-        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${style}`}>
+        <span className={`inline-flex items-center px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${style}`}>
             {status}
         </span>
     );
 }
 
-// Helper functions
-function getTenantStatusColor(status: string) {
-    const colors: Record<string, string> = {
-        active: 'bg-emerald-500',
-        pending: 'bg-amber-500',
-        suspended: 'bg-red-500',
-        inactive: 'bg-slate-400',
-    };
-    return colors[status.toLowerCase()] || 'bg-slate-400';
+function SkeletonRow() {
+    return (
+        <tr className="animate-pulse">
+            <td className="px-8 py-5"><div className="h-4 w-32 bg-slate-50 rounded"></div></td>
+            <td className="px-8 py-5"><div className="h-3 w-20 bg-slate-50 rounded"></div></td>
+            <td className="px-8 py-5"><div className="h-5 w-16 bg-slate-50 rounded-full"></div></td>
+            <td className="px-8 py-5"><div className="h-3 w-12 bg-slate-50 rounded ml-auto"></div></td>
+        </tr>
+    );
 }
 
-function getPaymentStatusStyle(status: string) {
-    const styles: Record<string, string> = {
-        completed: 'bg-emerald-100 text-emerald-700',
-        pending: 'bg-amber-100 text-amber-700',
-        failed: 'bg-red-100 text-red-700',
-        refunded: 'bg-purple-100 text-purple-700',
-    };
-    return styles[status?.toLowerCase()] || 'bg-slate-100 text-slate-700';
-}
-
-function getUserRoleBadge(role: string) {
-    const badges: Record<string, string> = {
-        admin: 'bg-purple-100 text-purple-700',
-        'tenant-admin': 'bg-blue-100 text-blue-700',
-        staff: 'bg-emerald-100 text-emerald-700',
-        user: 'bg-slate-100 text-slate-700',
-    };
-    return badges[role?.toLowerCase()] || 'bg-slate-100 text-slate-700';
+function ChevronRight({ className, size = 16, ...props }: any) {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width={size}
+            height={size}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={className}
+            {...props}
+        >
+            <path d="m9 18 6-6-6-6" />
+        </svg>
+    );
 }

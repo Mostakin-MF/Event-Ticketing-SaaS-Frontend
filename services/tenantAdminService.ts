@@ -353,8 +353,8 @@ export const tenantAdminService = {
         return response.data;
     },
 
-    purchaseTheme: async (themeId: string, paymentMethodId: string) => {
-        const response = await api.post(`/tenant-admin/themes/${themeId}/purchase`, { paymentMethodId });
+    purchaseTheme: async (themeId: string, paymentMethod: string) => {
+        const response = await api.post(`/tenant-admin/themes/${themeId}/purchase`, { paymentMethod });
         return response.data;
     },
 

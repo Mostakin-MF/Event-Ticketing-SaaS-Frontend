@@ -31,7 +31,13 @@ export default function AdminLayout({
     React.useEffect(() => {
         const verifySession = async () => {
             try {
-                await authService.checkAuth();
+                const user = await authService.checkAuth();
+                // Ensure only platform admins can access this layout
+                if (user.role !== 'platform_admin' && !user.isPlatformAdmin) {
+                    console.warn('Unauthorized role access attempt to admin dashboard');
+                    router.replace('/admin/login');
+                    return;
+                }
                 setIsAuthenticated(true);
             } catch (error) {
                 router.replace('/admin/login');

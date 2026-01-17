@@ -49,5 +49,10 @@ export const authService = {
         message: error?.message,
       };
     }
+  },
+
+  updateProfile: async (data: any) => {
+    const response = await api.put('/auth/profile', data);
+    return response.data;
   }
 };
