@@ -121,25 +121,32 @@ export default function DashboardPage() {
                     <h2 className="text-2xl font-bold text-slate-900">Recommended for You</h2>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {recommendedEvents.map((event: any) => (
-                        <Link href={`/attendee/dashboard/events/${event.id}`} key={event.id} className="group bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden">
-                             <div className="relative h-40 bg-slate-200 overflow-hidden">
-                                <img 
-                                    src={event.bannerUrl || 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&q=80&w=500'} 
-                                    alt={event.title} 
-                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                />
-                             </div>
-                             <div className="p-4">
-                                 <h3 className="font-bold text-slate-900 mb-1 truncate">{event.title}</h3>
-                                 <p className="text-xs text-slate-500 mb-3">{new Date(event.startDateTime).toLocaleDateString()}</p>
-                                 <div className="flex items-center justify-between">
-                                     <span className="text-sm font-black text-emerald-600">৳{event.minPrice}</span>
-                                     <span className="text-xs font-bold text-slate-400 uppercase group-hover:text-emerald-600 transition-colors">Book Now</span>
+                    {recommendedEvents.map((event: any) => {
+                        // Calculate minimum price from ticket types
+                        const minPrice = event.ticket_types && event.ticket_types.length > 0
+                            ? Math.min(...event.ticket_types.map((tt: any) => tt.price_taka))
+                            : null;
+
+                        return (
+                            <Link href={`/attendee/dashboard/events/${event.id}`} key={event.id} className="group bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden">
+                                 <div className="relative h-40 bg-slate-200 overflow-hidden">
+                                    <img 
+                                        src={event.hero_image_url || 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&q=80&w=500'} 
+                                        alt={event.name} 
+                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                    />
                                  </div>
-                             </div>
-                        </Link>
-                    ))}
+                                 <div className="p-4">
+                                     <h3 className="font-bold text-slate-900 mb-1 truncate">{event.name}</h3>
+                                     <p className="text-xs text-slate-500 mb-3">{new Date(event.start_at).toLocaleDateString()}</p>
+                                     <div className="flex items-center justify-between">
+                                         <span className="text-sm font-black text-emerald-600">৳{minPrice || '0'}</span>
+                                         <span className="text-xs font-bold text-slate-400 uppercase group-hover:text-emerald-600 transition-colors">Book Now</span>
+                                     </div>
+                                 </div>
+                            </Link>
+                        );
+                    })}
                 </div>
             </section>
         </div>

@@ -13,7 +13,7 @@ export default function TicketsSection({ content, colors, fonts, isLight }: Tick
     const tickets = Array.isArray(content) ? content : (content.tickets || []);
 
     return (
-        <section className={`py-24 px-6 relative ${isLight ? 'bg-slate-50' : 'bg-gradient-to-b from-slate-900 to-black'}`}>
+        <section id="tickets" className={`py-24 px-6 relative ${isLight ? 'bg-slate-50' : 'bg-gradient-to-b from-slate-900 to-black'}`}>
             {/* Background Glow */}
             <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-5xl aspect-square rounded-full blur-[120px] pointer-events-none ${isLight ? 'bg-emerald-500/5' : 'bg-emerald-500/10'}`}></div>
 

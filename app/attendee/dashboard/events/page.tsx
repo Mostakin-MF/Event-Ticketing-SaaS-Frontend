@@ -25,8 +25,9 @@ export default function DiscoverEventsPage() {
     }, []);
 
     const filteredEvents = events.filter(event => 
-        event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        event.location?.toLowerCase().includes(searchTerm.toLowerCase())
+        event.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        event.venue?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        event.city?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     if (loading) {
@@ -65,48 +66,59 @@ export default function DiscoverEventsPage() {
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredEvents.map((event) => (
-                        <Link 
-                            href={`/attendee/dashboard/events/${event.id}`} 
-                            key={event.id} 
-                            className="group bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col h-full"
-                        >
-                            <div className="relative h-48 bg-slate-200 overflow-hidden">
-                                <img 
-                                    src={event.bannerUrl || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&q=80&w=800'} 
-                                    alt={event.title} 
-                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                                <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-slate-900 shadow-sm">
-                                    {event.minPrice ? `From ৳${event.minPrice}` : 'Free'}
-                                </div>
-                            </div>
-                            
-                            <div className="p-6 flex-1 flex flex-col">
-                                <div className="mb-4">
-                                    <div className="text-xs font-bold text-emerald-600 mb-2 uppercase tracking-wide">{event.category || 'Event'}</div>
-                                    <h3 className="text-xl font-bold text-slate-900 leading-tight mb-2 group-hover:text-emerald-600 transition-colors">
-                                        {event.title}
-                                    </h3>
-                                    <p className="text-sm text-slate-500 line-clamp-2">{event.description}</p>
+                    {filteredEvents.map((event) => {
+                        // Calculate minimum price from ticket types
+                        const minPrice = event.ticket_types && event.ticket_types.length > 0
+                            ? Math.min(...event.ticket_types.map((tt: any) => tt.price_taka))
+                            : null;
+
+                        return (
+                            <Link 
+                                href={`/attendee/dashboard/events/${event.id}`} 
+                                key={event.id} 
+                                className="group bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col h-full"
+                            >
+                                <div className="relative h-48 bg-slate-200 overflow-hidden">
+                                    <img 
+                                        src={event.hero_image_url || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&q=80&w=800'} 
+                                        alt={event.name} 
+                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                    <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-slate-900 shadow-sm">
+                                        {minPrice ? `From ৳${minPrice}` : 'Free'}
+                                    </div>
                                 </div>
                                 
-                                <div className="mt-auto spacy-y-2 pt-4 border-t border-slate-50">
-                                    <div className="flex items-center gap-2 text-sm text-slate-600 mb-2">
-                                        <Calendar className="w-4 h-4 text-emerald-500" />
-                                        <span>
-                                            {new Date(event.startDateTime).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                                        </span>
+                                <div className="p-6 flex-1 flex flex-col">
+                                    <div className="mb-4">
+                                        <div className="text-xs font-bold text-emerald-600 mb-2 uppercase tracking-wide">{event.status || 'Event'}</div>
+                                        <h3 className="text-xl font-bold text-slate-900 leading-tight mb-2 group-hover:text-emerald-600 transition-colors">
+                                            {event.name}
+                                        </h3>
+                                        <p className="text-sm text-slate-500 line-clamp-2">{event.description}</p>
                                     </div>
-                                    <div className="flex items-center gap-2 text-sm text-slate-600">
-                                        <MapPin className="w-4 h-4 text-emerald-500" />
-                                        <span className="truncate">{event.location || 'Online'}</span>
+                                    
+                                    <div className="mt-auto space-y-2 pt-4 border-t border-slate-50">
+                                        <div className="flex items-center gap-2 text-sm text-slate-600 mb-2">
+                                            <Calendar className="w-4 h-4 text-emerald-500" />
+                                            <span>
+                                                {new Date(event.start_at).toLocaleDateString(undefined, { 
+                                                    month: 'short', 
+                                                    day: 'numeric',
+                                                    year: 'numeric'
+                                                })}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center gap-2 text-sm text-slate-600">
+                                            <MapPin className="w-4 h-4 text-emerald-500" />
+                                            <span className="truncate">{event.venue}, {event.city}</span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </Link>
-                    ))}
+                            </Link>
+                        );
+                    })}
                 </div>
             )}
         </div>

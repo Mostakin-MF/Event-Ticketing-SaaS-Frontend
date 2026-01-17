@@ -1,6 +1,7 @@
 'use client';
 
-import { ArrowRight, Calendar, MapPin } from 'lucide-react';
+import Link from 'next/link';
+import { ArrowRight, Calendar, MapPin, LogIn } from 'lucide-react';
 
 interface HeroProps {
     content: any;
@@ -68,6 +69,20 @@ export default function HeroSection({ content, colors, fonts, category, event, i
                     </>
                 )}
             </div>
+            {/* Attendee Login Button */}
+            <div className="absolute top-6 right-6 z-50">
+                <Link 
+                    href="/attendee/auth/login"
+                    className={`flex items-center gap-2 px-6 py-2.5 rounded-full font-bold backdrop-blur-md border transition-all hover:scale-105 ${
+                        isLight 
+                            ? 'bg-white/80 border-slate-200 text-slate-800 hover:bg-white shadow-sm' 
+                            : 'bg-black/30 border-white/20 text-white hover:bg-black/50'
+                    }`}
+                >
+                    <LogIn size={18} />
+                    <span>Attendee Login</span>
+                </Link>
+            </div>
 
             <div className="container mx-auto px-6 relative z-10">
                 <div className="max-w-4xl">
@@ -98,6 +113,7 @@ export default function HeroSection({ content, colors, fonts, category, event, i
 
                     <div className="flex flex-col sm:flex-row gap-4 animate-in fade-in slide-in-from-bottom-10 duration-700 delay-300">
                         <button
+                            onClick={() => document.getElementById('tickets')?.scrollIntoView({ behavior: 'smooth' })}
                             className="group w-full sm:w-auto px-8 py-4 rounded-2xl font-bold flex items-center justify-center sm:justify-start gap-2 transition-all hover:scale-105 active:scale-95 shadow-xl"
                             style={{ backgroundColor: colors.primary, color: '#fff', boxShadow: isMusic ? `0 0 20px ${colors.primary}40` : 'none' }}
                         >

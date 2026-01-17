@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { User, Mail, Phone, LogOut, Shield, Calendar, Globe, MapPin } from 'lucide-react';
+import { User, Mail, Phone, LogOut, Shield, Calendar, Globe, MapPin, Edit2, Check, X } from 'lucide-react';
 import { authService } from '@/services/authService';
 import { attendeeService } from '@/services/attendeeService';
 import { useRouter } from 'next/navigation';
@@ -11,6 +11,8 @@ export default function ProfilePage() {
     const [user, setUser] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
+    const [error, setError] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
     const [formData, setFormData] = useState({ 
         fullName: '',
         phoneNumber: '', 
@@ -63,30 +65,37 @@ export default function ProfilePage() {
         router.push('/attendee/auth/login');
     };
 
-    const handleSave = async () => {
+    const handleSave = async (e?: React.FormEvent) => {
+        if (e) e.preventDefault();
+        setError('');
+        setSuccessMessage('');
         try {
             setLoading(true);
             
-            // 1. Update User Details (Name)
-            if (formData.fullName !== user.name) {
-                 await attendeeService.updateProfile({ fullName: formData.fullName } as any);
-            }
+            // 1. Consolidated Update with data sanitization
+            const payload: any = {
+                fullName: formData.fullName,
+            };
 
-            // 2. Update Profile Details
-            await attendeeService.updateFullProfile({
-                phoneNumber: formData.phoneNumber,
-                dateOfBirth: formData.dateOfBirth,
-                gender: formData.gender,
-                country: formData.country,
-                city: formData.city
-            });
+            if (formData.phoneNumber) payload.phoneNumber = formData.phoneNumber;
+            if (formData.gender) payload.gender = formData.gender;
+            if (formData.country) payload.country = formData.country;
+            if (formData.city) payload.city = formData.city;
+            if (formData.dateOfBirth) payload.dateOfBirth = formData.dateOfBirth;
+
+            await attendeeService.updateFullProfile(payload);
             
             // Update local state
             setUser({ ...user, name: formData.fullName, ...formData });
+            setSuccessMessage("Profile updated successfully");
             setIsEditing(false);
-        } catch (e) {
+            
+            // Clear success message after 3 seconds
+            setTimeout(() => setSuccessMessage(''), 3000);
+        } catch (e: any) {
             console.error("Update failed", e);
-            alert("Failed to update profile");
+            const msg = e.response?.data?.message || "Failed to update profile";
+            setError(Array.isArray(msg) ? msg.join(', ') : msg);
         } finally {
             setLoading(false);
         }
@@ -97,191 +106,143 @@ export default function ProfilePage() {
     if (!user) return null;
 
     return (
-        <div className="max-w-2xl mx-auto space-y-8 pb-20">
-             <header className="flex justify-between items-start">
-                <div>
-                    <h1 className="text-3xl font-black text-slate-900 tracking-tight">My Profile</h1>
-                    <p className="text-slate-500 mt-1">Manage your account settings.</p>
+        <div className="h-screen w-full bg-slate-50 flex items-center justify-center p-4 overflow-hidden">
+            <div className="w-full max-w-lg bg-white rounded-3xl shadow-xl border border-slate-100 flex flex-col max-h-[90vh]">
+                {/* Header */}
+                <div className="flex items-center justify-between p-6 border-b border-slate-100 bg-white sticky top-0 z-10">
+                    <h1 className="text-xl font-bold text-slate-900">My Profile</h1>
+                    {!isEditing && (
+                        <button 
+                            type="button"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setIsEditing(true);
+                            }}
+                            className="btn btn-sm btn-ghost text-emerald-600 hover:bg-emerald-50 font-bold"
+                        >
+                            <Edit2 className="w-4 h-4 mr-2"/> Edit
+                        </button>
+                    )}
                 </div>
-                {!isEditing && (
-                    <button onClick={() => setIsEditing(true)} className="btn btn-outline btn-sm">Edit Profile</button>
-                )}
-            </header>
 
-            <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
-                <div className="bg-slate-900 h-32 relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-900 to-slate-900 opacity-80"></div>
-                </div>
-                
-                <div className="px-8 pb-8">
-                    <div className="relative -mt-16 mb-6">
-                        <div className="w-32 h-32 rounded-3xl bg-white p-2 shadow-lg">
-                             <div className="w-full h-full bg-slate-100 rounded-2xl flex items-center justify-center text-4xl font-bold text-emerald-600">
-                                {user.name ? user.name.charAt(0).toUpperCase() : <User />}
+                {/* Content - Scrollable only if needed inside card, but kept compact */}
+                <form id="profile-form" onSubmit={handleSave} className="flex-1 overflow-y-auto p-6 space-y-6">
+                    {/* Avatar & Name */}
+                    <div className="flex flex-col items-center">
+                         <div className="w-20 h-20 rounded-full bg-slate-100 flex items-center justify-center text-3xl font-bold text-emerald-600 mb-3">
+                            {user.name ? user.name.charAt(0).toUpperCase() : <User />}
+                         </div>
+                         {isEditing ? (
+                             <input 
+                                 type="text" 
+                                 value={formData.fullName}
+                                 onChange={e => setFormData({...formData, fullName: e.target.value})}
+                                 className="text-lg font-bold text-center text-slate-900 border-b border-slate-200 focus:border-emerald-500 outline-none w-full bg-transparent pb-1"
+                                 placeholder="Your Name"
+                             />
+                         ) : (
+                             <h2 className="text-lg font-bold text-slate-900">{user.name}</h2>
+                         )}
+                         <span className="text-xs font-medium text-slate-400 mt-1">{user.email}</span>
+                    </div>
+
+                    {/* Fields */}
+                    <div className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                             <div className="space-y-1">
+                                 <label className="text-[10px] font-bold text-slate-400 uppercase">Phone</label>
+                                 {isEditing ? (
+                                     <input 
+                                         type="tel"
+                                         value={formData.phoneNumber}
+                                         onChange={e => setFormData({...formData, phoneNumber: e.target.value})}
+                                         className="w-full text-sm font-medium text-slate-700 border-b border-slate-200 focus:border-emerald-500 outline-none py-1"
+                                         placeholder="+880..."
+                                     />
+                                 ) : (
+                                     <p className="text-sm font-medium text-slate-700">{user.phoneNumber || 'Not set'}</p>
+                                 )}
+                             </div>
+                             <div className="space-y-1">
+                                 <label className="text-[10px] font-bold text-slate-400 uppercase">Gender</label>
+                                 {isEditing ? (
+                                     <select
+                                         value={formData.gender}
+                                         onChange={e => setFormData({...formData, gender: e.target.value})}
+                                         className="w-full text-sm font-medium text-slate-700 border-b border-slate-200 focus:border-emerald-500 outline-none py-1 bg-transparent"
+                                     >
+                                        <option value="">Select</option>
+                                        <option value="MALE">Male</option>
+                                        <option value="FEMALE">Female</option>
+                                        <option value="OTHER">Other</option>
+                                     </select>
+                                 ) : (
+                                     <p className="text-sm font-medium text-slate-700 capitalize">{user.gender?.toLowerCase() || 'Not set'}</p>
+                                 )}
+                             </div>
+                             <div className="space-y-1">
+                                 <label className="text-[10px] font-bold text-slate-400 uppercase">Birth Date</label>
+                                 {isEditing ? (
+                                     <input 
+                                         type="date"
+                                         value={formData.dateOfBirth}
+                                         onChange={e => setFormData({...formData, dateOfBirth: e.target.value})}
+                                         className="w-full text-sm font-medium text-slate-700 border-b border-slate-200 focus:border-emerald-500 outline-none py-1 bg-transparent"
+                                     />
+                                 ) : (
+                                     <p className="text-sm font-medium text-slate-700">
+                                        {user.dateOfBirth ? new Date(user.dateOfBirth).toLocaleDateString() : 'Not set'}
+                                     </p>
+                                 )}
+                             </div>
+                             <div className="space-y-1">
+                                 <label className="text-[10px] font-bold text-slate-400 uppercase">Location</label>
+                                 {isEditing ? (
+                                     <div className="flex gap-2">
+                                         <input 
+                                             type="text" 
+                                             value={formData.city}
+                                             onChange={e => setFormData({...formData, city: e.target.value})}
+                                             placeholder="City"
+                                             className="w-full text-sm font-medium text-slate-700 border-b border-slate-200 focus:border-emerald-500 outline-none py-1"
+                                         />
+                                     </div>
+                                 ) : (
+                                     <p className="text-sm font-medium text-slate-700">
+                                         {[user.city, user.country].filter(Boolean).join(', ') || 'Not set'}
+                                     </p>
+                                 )}
                              </div>
                         </div>
                     </div>
+                </form>
 
-                    <div className="space-y-6">
-                        <div>
-                            {isEditing ? (
-                                <input 
-                                    type="text" 
-                                    value={formData.fullName}
-                                    onChange={e => setFormData({...formData, fullName: e.target.value})}
-                                    className="text-2xl font-bold text-slate-900 border-b border-slate-300 focus:border-emerald-500 outline-none w-full"
-                                />
-                            ) : (
-                                <h2 className="text-2xl font-bold text-slate-900">{user.name}</h2>
-                            )}
-                            <span className="badge badge-accent font-bold mt-2 capitalize">{user.role || 'Attendee'}</span>
+                {/* Footer Actions */}
+                <div className="p-6 border-t border-slate-100 bg-slate-50/50">
+                    {isEditing ? (
+                        <div className="flex gap-3">
+                            <button 
+                                type="submit"
+                                form="profile-form"
+                                disabled={loading}
+                                className="flex-1 btn btn-primary btn-sm rounded-xl font-bold"
+                            >
+                                {loading ? <span className="loading loading-spinner loading-xs"></span> : <Check className="w-4 h-4 mr-2"/>} Save Changes
+                            </button>
+                            <button 
+                                type="button"
+                                onClick={() => setIsEditing(false)} 
+                                className="flex-1 btn btn-ghost btn-sm rounded-xl"
+                            >
+                                <X className="w-4 h-4 mr-2"/> Cancel
+                            </button>
                         </div>
-
-                        <div className="grid gap-4">
-                             <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 flex items-center gap-4">
-                                <div className="p-2 bg-white rounded-full shadow-sm">
-                                    <Mail className="w-5 h-5 text-emerald-600" />
-                                </div>
-                                <div>
-                                    <p className="text-xs text-slate-400 font-bold uppercase">Email Address</p>
-                                    <p className="text-slate-700 font-medium">{user.email}</p>
-                                </div>
-                             </div>
-
-                             <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 flex items-center gap-4">
-                                <div className="p-2 bg-white rounded-full shadow-sm">
-                                    <Phone className="w-5 h-5 text-slate-400" />
-                                </div>
-                                <div className="flex-1">
-                                    <p className="text-xs text-slate-400 font-bold uppercase">Phone Number</p>
-                                    {isEditing ? (
-                                        <input 
-                                            type="tel" 
-                                            value={formData.phoneNumber}
-                                            onChange={e => setFormData({...formData, phoneNumber: e.target.value})}
-                                            placeholder="Enter phone number"
-                                            className="bg-transparent border-b border-slate-300 focus:border-emerald-500 outline-none w-full text-slate-700 font-medium"
-                                        />
-                                    ) : (
-                                        <p className={`font-medium ${user.phoneNumber ? 'text-slate-700' : 'text-slate-400 italic'}`}>
-                                            {user.phoneNumber || 'Not set'}
-                                        </p>
-                                    )}
-                                </div>
-                             </div>
-
-                             {/* Additional Fields Grid */}
-                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {/* Date of Birth */}
-                                <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 flex items-center gap-4">
-                                    <div className="p-2 bg-white rounded-full shadow-sm">
-                                        <Calendar className="w-5 h-5 text-slate-400" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <p className="text-xs text-slate-400 font-bold uppercase">Date of Birth</p>
-                                        {isEditing ? (
-                                            <input 
-                                                type="date" 
-                                                value={formData.dateOfBirth}
-                                                onChange={e => setFormData({...formData, dateOfBirth: e.target.value})}
-                                                className="bg-transparent border-b border-slate-300 focus:border-emerald-500 outline-none w-full text-slate-700 font-medium"
-                                            />
-                                        ) : (
-                                            <p className={`font-medium ${user.dateOfBirth ? 'text-slate-700' : 'text-slate-400 italic'}`}>
-                                                {user.dateOfBirth ? new Date(user.dateOfBirth).toLocaleDateString() : 'Not set'}
-                                            </p>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {/* Gender */}
-                                <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 flex items-center gap-4">
-                                    <div className="p-2 bg-white rounded-full shadow-sm">
-                                        <User className="w-5 h-5 text-slate-400" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <p className="text-xs text-slate-400 font-bold uppercase">Gender</p>
-                                        {isEditing ? (
-                                             <select
-                                                value={formData.gender}
-                                                onChange={(e) => setFormData({...formData, gender: e.target.value})}
-                                                className="bg-transparent border-b border-slate-300 focus:border-emerald-500 outline-none w-full text-slate-700 font-medium"
-                                            >
-                                                <option value="">Select</option>
-                                                <option value="MALE">Male</option>
-                                                <option value="FEMALE">Female</option>
-                                                <option value="OTHER">Other</option>
-                                            </select>
-                                        ) : (
-                                            <p className={`font-medium ${user.gender ? 'text-slate-700' : 'text-slate-400 italic'}`}>
-                                                {user.gender || 'Not set'}
-                                            </p>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {/* Country */}
-                                <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 flex items-center gap-4">
-                                    <div className="p-2 bg-white rounded-full shadow-sm">
-                                        <Globe className="w-5 h-5 text-slate-400" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <p className="text-xs text-slate-400 font-bold uppercase">Country</p>
-                                        {isEditing ? (
-                                            <input 
-                                                type="text" 
-                                                value={formData.country}
-                                                onChange={e => setFormData({...formData, country: e.target.value})}
-                                                placeholder="Country"
-                                                className="bg-transparent border-b border-slate-300 focus:border-emerald-500 outline-none w-full text-slate-700 font-medium"
-                                            />
-                                        ) : (
-                                            <p className={`font-medium ${user.country ? 'text-slate-700' : 'text-slate-400 italic'}`}>
-                                                {user.country || 'Not set'}
-                                            </p>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {/* City */}
-                                <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 flex items-center gap-4">
-                                    <div className="p-2 bg-white rounded-full shadow-sm">
-                                        <MapPin className="w-5 h-5 text-slate-400" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <p className="text-xs text-slate-400 font-bold uppercase">City</p>
-                                        {isEditing ? (
-                                            <input 
-                                                type="text" 
-                                                value={formData.city}
-                                                onChange={e => setFormData({...formData, city: e.target.value})}
-                                                placeholder="City"
-                                                className="bg-transparent border-b border-slate-300 focus:border-emerald-500 outline-none w-full text-slate-700 font-medium"
-                                            />
-                                        ) : (
-                                            <p className={`font-medium ${user.city ? 'text-slate-700' : 'text-slate-400 italic'}`}>
-                                                {user.city || 'Not set'}
-                                            </p>
-                                        )}
-                                    </div>
-                                </div>
-                             </div>
-                        </div>
-
-                        <div className="pt-6 border-t border-slate-100">
-                             {isEditing ? (
-                                 <div className="flex gap-4">
-                                     <button onClick={handleSave} className="flex-1 btn btn-primary font-bold rounded-xl">Save Changes</button>
-                                     <button onClick={() => setIsEditing(false)} className="flex-1 btn btn-ghost font-bold rounded-xl">Cancel</button>
-                                 </div>
-                             ) : (
-                                 <button onClick={handleLogout} className="btn btn-error btn-outline w-full gap-2 font-bold rounded-xl">
-                                    <LogOut className="w-4 h-4" />
-                                    Sign Out
-                                 </button>
-                             )}
-                        </div>
-                    </div>
+                    ) : (
+                        <button onClick={handleLogout} className="btn btn-outline btn-error btn-sm w-full rounded-xl gap-2">
+                            <LogOut className="w-4 h-4" /> Sign Out
+                        </button>
+                    )}
                 </div>
             </div>
         </div>

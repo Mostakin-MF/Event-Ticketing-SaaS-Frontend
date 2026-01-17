@@ -20,11 +20,14 @@ function CheckoutContent() {
     
     // Query params for pre-filling
     const eventId = searchParams.get('eventId');
-    const ticketTypeId = searchParams.get('ticketTypeId');
-    const initialQty = parseInt(searchParams.get('qty') || '1');
+    
+    // Support both legacy single ticket and new cart array format
+    const cartParam = searchParams.get('cart');
+    const legacyTicketTypeId = searchParams.get('ticketTypeId');
+    const legacyQty = searchParams.get('qty');
 
     const [event, setEvent] = useState<any>(null);
-    const [ticketType, setTicketType] = useState<any>(null);
+    const [cartItems, setCartItems] = useState<Array<{ticket_type_id: string, quantity: number, ticketType?: any}>>([]);
     const [loading, setLoading] = useState(true);
     const [processing, setProcessing] = useState(false);
     const [error, setError] = useState('');
@@ -33,57 +36,151 @@ function CheckoutContent() {
     // Form State
     const [paymentMethod, setPaymentMethod] = useState<'card' | 'bkash' | 'nagad'>('card');
     const [discountCode, setDiscountCode] = useState('');
+    const [discountAmount, setDiscountAmount] = useState(0);
+    const [validatingDiscount, setValidatingDiscount] = useState(false);
 
     const [user, setUser] = useState<any>(null); // Store user details
 
     useEffect(() => {
         const init = async () => {
-            if (!eventId || !ticketTypeId) {
+            console.log('Checkout page initialized');
+            console.log('Event ID:', eventId);
+            console.log('Cart param:', cartParam);
+            console.log('Legacy ticket type ID:', legacyTicketTypeId);
+            
+            if (!eventId) {
+                console.error('No event ID provided');
                 setLoading(false);
                 return;
             }
 
-            try {
-                // Fetch User Details
-                const profile = await attendeeService.getProfile();
-                setUser(profile);
+            let caughtError: any = null;
 
-                // Determine event details
+            try {
+                // Fetch User Details - this requires authentication
+                console.log('Fetching user profile...');
+                const profile = await attendeeService.getFullProfile();
+                console.log('User profile:', profile);
+                setUser(profile.data);
+
+                // Fetch event details
+                console.log('Fetching event details for:', eventId);
                 const eventData = await attendeeService.getEventDetails(eventId);
+                console.log('Event data:', eventData);
                 setEvent(eventData);
 
-                // Find specific ticket type
-                if (eventData && eventData.ticket_types) {
-                    const found = eventData.ticket_types.find((t: any) => t.id === ticketTypeId);
-                    setTicketType(found);
+                // Parse cart items
+                let items: Array<{ticket_type_id: string, quantity: number}> = [];
+                
+                if (cartParam) {
+                    // New cart format
+                    try {
+                        items = JSON.parse(decodeURIComponent(cartParam));
+                        console.log('Parsed cart items:', items);
+                    } catch (e) {
+                        console.error("Failed to parse cart", e);
+                        setError("Invalid cart data. Please go back and try again.");
+                    }
+                } else if (legacyTicketTypeId) {
+                    // Legacy single ticket format
+                    items = [{ ticket_type_id: legacyTicketTypeId, quantity: parseInt(legacyQty || '1') }];
+                    console.log('Using legacy format:', items);
                 }
-            } catch (e) {
+
+                // Enrich cart items with ticket type details
+                if (eventData && eventData.ticket_types && items.length > 0) {
+                    const enrichedItems = items.map(item => {
+                        const ticketType = eventData.ticket_types.find((t: any) => t.id === item.ticket_type_id);
+                        return {
+                            ...item,
+                            ticketType
+                        };
+                    }).filter(item => item.ticketType); // Remove items with missing ticket types
+
+                    console.log('Enriched cart items:', enrichedItems);
+                    setCartItems(enrichedItems);
+                }
+            } catch (e: any) {
+                caughtError = e;
                 console.error("Setup failed", e);
-                setError("Could not load checkout details. Please try logging in again.");
-            } finally {
+                
+                // Check if it's an authentication error (401)
+                if (e.response?.status === 401) {
+                    console.log('User not authenticated, redirecting to login...');
+                    // Save current URL to return after login
+                    const returnUrl = window.location.href;
+                    router.push(`/attendee/auth/login?returnUrl=${encodeURIComponent(returnUrl)}`);
+                } else {
+                    setError("Could not load checkout details. Please try again.");
+                }
                 setLoading(false);
+            } finally {
+                // Only set loading to false if we're not redirecting
+                if (!caughtError || caughtError.response?.status !== 401) {
+                    setLoading(false);
+                }
             }
         };
         init();
-    }, [eventId, ticketTypeId]);
+    }, [eventId, cartParam, legacyTicketTypeId, legacyQty, router]);
 
-    const subtotal = ticketType ? ticketType.price_taka * initialQty : 0;
-    const fees = Math.floor(subtotal * 0.02); // 2% platform fee mock
-    const discount = 0; // Implement discount logic API later
-    const total = subtotal + fees - discount;
+    const handleValidateDiscount = async () => {
+        if (!discountCode.trim() || !eventId) return;
+
+        setValidatingDiscount(true);
+        try {
+            const result = await attendeeService.validateDiscountCode(eventId, discountCode);
+            if (result.valid) {
+                // Calculate discount amount
+                const subtotal = getSubtotal();
+                if (result.discount_type === 'percentage') {
+                    setDiscountAmount(Math.floor(subtotal * (result.discount_value || 0) / 100));
+                } else {
+                    setDiscountAmount(result.discount_value || 0);
+                }
+                alert(`Discount applied: ${result.message || 'Success!'}`);
+            } else {
+                setDiscountAmount(0);
+                alert(result.message || 'Invalid discount code');
+            }
+        } catch (err: any) {
+            console.error("Discount validation failed", err);
+            setDiscountAmount(0);
+            alert(err.response?.data?.message || "Failed to validate discount code");
+        } finally {
+            setValidatingDiscount(false);
+        }
+    };
+
+    const getSubtotal = () => {
+        return cartItems.reduce((sum, item) => {
+            return sum + (item.ticketType?.price_taka || 0) * item.quantity;
+        }, 0);
+    };
+
+    const subtotal = getSubtotal();
+    const fees = Math.floor(subtotal * 0.02); // 2% platform fee
+    const total = subtotal + fees - discountAmount;
 
     const handlePlaceOrder = async () => {
         setProcessing(true);
         setError('');
         try {
-            if (!eventId || !ticketTypeId) throw new Error("Invalid order parameters");
+            if (!eventId) throw new Error("Invalid order parameters");
+            if (cartItems.length === 0) throw new Error("No items in cart");
             if (!user) throw new Error("User information missing. Please login.");
 
-            // API Call
+            // Prepare items for backend (already in correct format)
+            const items = cartItems.map(item => ({
+                ticket_type_id: item.ticket_type_id,
+                quantity: item.quantity
+            }));
+
+            // API Call with corrected DTO structure
             await attendeeService.createOrder(
                 eventId, 
-                [{ typeId: ticketTypeId, quantity: initialQty }],
-                { name: user.name, email: user.email },
+                items,
+                { name: user.fullName, email: user.email },
                 paymentMethod,
                 discountCode 
             );
@@ -91,7 +188,7 @@ function CheckoutContent() {
             setSuccess(true);
             // Redirect after delay
             setTimeout(() => {
-                router.push('/attendee/tickets');
+                router.push('/attendee/dashboard/tickets');
             }, 2000);
 
         } catch (err: any) {
@@ -101,15 +198,54 @@ function CheckoutContent() {
         }
     };
 
+
+
     if (loading) return <div className="flex justify-center p-20"><Loader2 className="w-8 h-8 animate-spin text-emerald-600" /></div>;
 
-    if (!eventId || !ticketTypeId || !event || !ticketType) {
+    // Show error if there was an actual error
+    if (error) {
         return (
             <div className="text-center p-20">
                 <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-                <h1 className="text-xl font-bold text-slate-800">Invalid Checkout Link</h1>
-                <p className="text-slate-500 mb-6">Please start from the event page.</p>
+                <h1 className="text-xl font-bold text-slate-800">Checkout Error</h1>
+                <p className="text-slate-500 mb-6">{error}</p>
                 <button onClick={() => router.back()} className="btn btn-primary">Go Back</button>
+            </div>
+        );
+    }
+
+    // More specific validation with debugging
+    if (!eventId) {
+        return (
+            <div className="text-center p-20">
+                <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+                <h1 className="text-xl font-bold text-slate-800">Missing Event ID</h1>
+                <p className="text-slate-500 mb-6">No event ID was provided in the URL.</p>
+                <button onClick={() => router.push('/attendee/dashboard/events')} className="btn btn-primary">Browse Events</button>
+            </div>
+        );
+    }
+
+    if (!event) {
+        return (
+            <div className="text-center p-20">
+                <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+                <h1 className="text-xl font-bold text-slate-800">Event Not Found</h1>
+                <p className="text-slate-500 mb-6">Could not load event details. The event may no longer be available.</p>
+                <p className="text-xs text-slate-400 mb-4">Event ID: {eventId}</p>
+                <button onClick={() => router.push('/attendee/dashboard/events')} className="btn btn-primary">Browse Events</button>
+            </div>
+        );
+    }
+
+    if (cartItems.length === 0) {
+        return (
+            <div className="text-center p-20">
+                <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+                <h1 className="text-xl font-bold text-slate-800">Empty Cart</h1>
+                <p className="text-slate-500 mb-6">No tickets selected. Please select tickets from the event page.</p>
+                <p className="text-xs text-slate-400 mb-4">Cart param: {cartParam || 'none'}</p>
+                <button onClick={() => router.push(`/attendee/dashboard/events/${eventId}`)} className="btn btn-primary">Back to Event</button>
             </div>
         );
     }
@@ -122,7 +258,7 @@ function CheckoutContent() {
                 </div>
                 <h1 className="text-3xl font-black text-slate-900 mb-2">Order Confirmed!</h1>
                 <p className="text-slate-500 mb-8 max-w-md">Your tickets have been sent to your email and are also available in your dashboard.</p>
-                <button onClick={() => router.push('/attendee/tickets')} className="px-8 py-3 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-colors">
+                <button onClick={() => router.push('/attendee/dashboard/tickets')} className="px-8 py-3 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-colors">
                     View My Tickets
                 </button>
             </div>
@@ -144,14 +280,39 @@ function CheckoutContent() {
                         <h2 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
                             <Ticket className="w-5 h-5 text-emerald-500" /> Order Details
                         </h2>
-                        <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
-                            <div>
-                                <p className="font-bold text-slate-900">{ticketType.name}</p>
-                                <p className="text-sm text-slate-500">{event.name}</p>
-                            </div>
-                            <div className="text-right">
-                                <p className="font-bold text-slate-900">৳{ticketType.price_taka} x {initialQty}</p>
-                                <p className="text-sm text-emerald-600 font-bold">৳{subtotal}</p>
+                        <div className="space-y-3">
+                            {cartItems.map((item, index) => (
+                                <div key={index} className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
+                                    <div>
+                                        <p className="font-bold text-slate-900">{item.ticketType?.name}</p>
+                                        <p className="text-sm text-slate-500">{event.name}</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="font-bold text-slate-900">৳{item.ticketType?.price_taka} x {item.quantity}</p>
+                                        <p className="text-sm text-emerald-600 font-bold">৳{(item.ticketType?.price_taka || 0) * item.quantity}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Discount Code Section */}
+                        <div className="mt-6 pt-6 border-t border-slate-200">
+                            <label className="block text-sm font-bold text-slate-700 mb-2">Discount Code (Optional)</label>
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    value={discountCode}
+                                    onChange={(e) => setDiscountCode(e.target.value)}
+                                    placeholder="Enter code"
+                                    className="input input-bordered flex-1 rounded-xl"
+                                />
+                                <button
+                                    onClick={handleValidateDiscount}
+                                    disabled={validatingDiscount || !discountCode.trim()}
+                                    className="btn btn-outline rounded-xl"
+                                >
+                                    {validatingDiscount ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Apply'}
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -177,7 +338,7 @@ function CheckoutContent() {
                                 <Smartphone className="w-6 h-6" />
                                 <span className="text-xs font-bold uppercase">bKash</span>
                             </button>
-                             <button 
+                            <button 
                                 onClick={() => setPaymentMethod('nagad')}
                                 className={`p-4 rounded-xl border-2 flex flex-col items-center gap-2 transition-all ${paymentMethod === 'nagad' ? 'border-orange-500 bg-orange-50 text-orange-700' : 'border-slate-100 hover:border-slate-200'}`}
                             >
@@ -202,10 +363,12 @@ function CheckoutContent() {
                                 <span>Platform Fee</span>
                                 <span className="font-medium">৳{fees}</span>
                             </div>
-                            <div className="flex justify-between text-emerald-600">
-                                <span>Discount</span>
-                                <span className="font-medium">-৳{discount}</span>
-                            </div>
+                            {discountAmount > 0 && (
+                                <div className="flex justify-between text-emerald-600">
+                                    <span>Discount</span>
+                                    <span className="font-medium">-৳{discountAmount}</span>
+                                </div>
+                            )}
                             <div className="border-t border-slate-100 pt-3 flex justify-between text-base font-black text-slate-900">
                                 <span>Total</span>
                                 <span>৳{total}</span>

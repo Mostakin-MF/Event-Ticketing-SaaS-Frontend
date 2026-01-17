@@ -77,6 +77,7 @@ export default function AttendeeLayout({
                         const isActive = pathname === item.href;
                         return (
                             <Link
+                                key={item.href}
                                 href={item.href}
                                 onClick={() => setIsSidebarOpen(false)}
                                 className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all ${isActive ? 'bg-emerald-500/10 text-emerald-400' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}

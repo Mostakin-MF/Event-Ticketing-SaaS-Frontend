@@ -29,6 +29,12 @@ export const authService = {
     return response.data;
   },
 
+  registerAttendee: async (data: any): Promise<any> => {
+    // Calls the public auth registration endpoint
+    const response = await api.post('/auth/register', { ...data, role: 'attendee' });
+    return response.data;
+  },
+
   logout: async () => {
     try {
       await api.post('/auth/logout');
