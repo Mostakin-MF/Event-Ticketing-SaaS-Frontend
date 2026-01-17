@@ -16,9 +16,9 @@ export default function GallerySection({ content, colors, fonts, isLight }: Gall
         <section className="py-24 px-6 relative overflow-hidden">
             <div className="container mx-auto">
                 <div className="text-center max-w-3xl mx-auto mb-16">
-                    <span className="text-sm font-bold uppercase tracking-widest mb-4 block" style={{ color: colors.secondary }}>Visuals</span>
+                    <span className="text-sm font-bold uppercase tracking-widest mb-4 block" style={{ color: colors.secondary }}>{content.subHeading || 'Visuals'}</span>
                     <h2 className="text-4xl md:text-5xl font-black mb-6" style={{ color: colors.text, fontFamily: fonts.heading }}>
-                        Event Gallery
+                        {content.heading || 'Event Gallery'}
                     </h2>
                 </div>
 

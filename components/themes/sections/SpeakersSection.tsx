@@ -18,9 +18,9 @@ export default function SpeakersSection({ content, colors, fonts, isLight }: Spe
         <section className={`py-24 px-6 relative ${isLight ? 'bg-white' : ''}`}>
             <div className="container mx-auto">
                 <div className="text-center max-w-3xl mx-auto mb-16">
-                    <span className="text-sm font-bold uppercase tracking-widest mb-4 block" style={{ color: colors.secondary }}>Experts</span>
+                    <span className="text-sm font-bold uppercase tracking-widest mb-4 block" style={{ color: colors.secondary }}>{content.subHeading || 'Experts'}</span>
                     <h2 className="text-4xl md:text-5xl font-black mb-6" style={{ color: colors.text, fontFamily: fonts.heading }}>
-                        The Lineup
+                        {content.heading || 'The Lineup'}
                     </h2>
                 </div>
 

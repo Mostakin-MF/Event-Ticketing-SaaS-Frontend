@@ -30,15 +30,15 @@ export default function ScheduleSection({ content, colors, fonts, isLight, categ
                         <div className="flex items-center gap-2 mb-4">
                             {isTech && <Terminal size={16} style={{ color: colors.secondary }} />}
                             <span className="text-sm font-bold uppercase tracking-widest block" style={{ color: colors.secondary }}>
-                                {isTech ? 'STDOUT_TIMELINE' : 'Timeline'}
+                                {content.subHeading || (isTech ? 'STDOUT_TIMELINE' : 'Timeline')}
                             </span>
                         </div>
                         <h2 className="text-4xl md:text-5xl font-black" style={{ color: colors.text, fontFamily: fonts.heading }}>
-                            {isTech ? 'Event_Schedule.log' : 'Event Schedule'}
+                            {content.heading || (isTech ? 'Event_Schedule.log' : 'Event Schedule')}
                         </h2>
                     </div>
                     <p className={`max-w-sm ${isLight ? 'text-slate-600' : 'text-slate-400'}`} style={{ fontFamily: fonts.body }}>
-                        {isTech ? 'System initialization complete. Reviewing event execution cycle.' : "Don't miss a single moment of the action. Here is our planned timeline for the event."}
+                        {content.description || (isTech ? 'System initialization complete. Reviewing event execution cycle.' : "Don't miss a single moment of the action. Here is our planned timeline for the event.")}
                     </p>
                 </div>
 

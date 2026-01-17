@@ -19,12 +19,12 @@ export default function TicketsSection({ content, colors, fonts, isLight }: Tick
 
             <div className="container mx-auto relative z-10">
                 <div className="text-center max-w-3xl mx-auto mb-16">
-                    <span className="text-sm font-bold uppercase tracking-widest mb-4 block" style={{ color: colors.secondary }}>Join Us</span>
+                    <span className="text-sm font-bold uppercase tracking-widest mb-4 block" style={{ color: colors.secondary }}>{content.subHeading || 'Join Us'}</span>
                     <h2 className="text-4xl md:text-5xl font-black mb-6" style={{ color: colors.text, fontFamily: fonts.heading }}>
-                        Get Your Tickets
+                        {content.heading || 'Get Your Tickets'}
                     </h2>
                     <p className={isLight ? 'text-slate-600' : 'text-slate-400'} style={{ fontFamily: fonts.body }}>
-                        Choose the perfect pass for your experience. All tickets include access to main activities.
+                        {content.description || 'Choose the perfect pass for your experience. All tickets include access to main activities.'}
                     </p>
                 </div>
 

@@ -86,6 +86,17 @@ export default function TenantAdminLayout({
         );
     };
 
+    // Check if we are in the "Customize Theme" page (fullscreen mode)
+    const isCustomizePage = pathname?.endsWith('/customize');
+
+    if (isCustomizePage) {
+        return (
+            <div className="min-h-screen bg-slate-50 font-sans antialiased text-slate-900">
+                {children}
+            </div>
+        );
+    }
+
     return (
         <div className="drawer lg:drawer-open font-sans antialiased text-slate-900 bg-slate-50">
             <input id="tenant-drawer" type="checkbox" className="drawer-toggle" />

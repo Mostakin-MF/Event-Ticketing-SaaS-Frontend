@@ -33,7 +33,7 @@ export default function AboutSection({ content, colors, fonts, isLight, category
                     <div className="space-y-8">
                         <div>
                             <span className={`text-sm font-bold uppercase tracking-widest mb-4 block ${isSports ? 'italic text-red-500' : ''} ${isFestival ? 'text-pink-500 tracking-normal font-black' : ''}`} style={{ color: (isSports || isFestival) ? undefined : colors.secondary }}>
-                                {isSports ? 'The Legacy' : isFestival ? '✨ The Vibration' : 'Our Story'}
+                                {content.subHeading || (isSports ? 'The Legacy' : isFestival ? '✨ The Vibration' : 'Our Story')}
                             </span>
                             <h2 className={`text-4xl md:text-5xl font-black leading-tight ${isSports ? 'italic uppercase tracking-tighter' : ''}`} style={{ color: colors.text, fontFamily: fonts.heading }}>
                                 {content.heading || 'Crafting Unforgettable Moments'}
@@ -45,14 +45,25 @@ export default function AboutSection({ content, colors, fonts, isLight, category
                         </p>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                            <div>
-                                <h4 className="text-3xl font-black mb-1" style={{ color: colors.primary }}>10k+</h4>
-                                <p className={`text-sm uppercase font-bold tracking-wider ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>Attendees Expected</p>
-                            </div>
-                            <div>
-                                <h4 className="text-3xl font-black mb-1" style={{ color: colors.primary }}>25+</h4>
-                                <p className={`text-sm uppercase font-bold tracking-wider ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>World-Class Speakers</p>
-                            </div>
+                            {content.stats ? (
+                                content.stats.map((stat: any, idx: number) => (
+                                    <div key={idx}>
+                                        <h4 className="text-3xl font-black mb-1" style={{ color: colors.primary }}>{stat.value}</h4>
+                                        <p className={`text-sm uppercase font-bold tracking-wider ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>{stat.label}</p>
+                                    </div>
+                                ))
+                            ) : (
+                                <>
+                                    <div>
+                                        <h4 className="text-3xl font-black mb-1" style={{ color: colors.primary }}>10k+</h4>
+                                        <p className={`text-sm uppercase font-bold tracking-wider ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>Attendees Expected</p>
+                                    </div>
+                                    <div>
+                                        <h4 className="text-3xl font-black mb-1" style={{ color: colors.primary }}>25+</h4>
+                                        <p className={`text-sm uppercase font-bold tracking-wider ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>World-Class Speakers</p>
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>
