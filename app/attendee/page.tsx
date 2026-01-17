@@ -1,10 +1,18 @@
-import React from 'react';
+'use client';
 
-export default function AttendeeDashboard() {
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+
+export default function AttendeePage() {
+    const router = useRouter();
+
+    useEffect(() => {
+        router.push('/attendee/dashboard');
+    }, [router]);
+
     return (
-        <div className="p-6">
-            <h1 className="text-2xl font-bold mb-4">Attendee Portal</h1>
-            <p className="text-slate-600">View your ticket history and upcoming events here.</p>
+        <div className="min-h-screen flex items-center justify-center bg-slate-50">
+            <span className="loading loading-spinner loading-lg text-emerald-600"></span>
         </div>
     );
 }

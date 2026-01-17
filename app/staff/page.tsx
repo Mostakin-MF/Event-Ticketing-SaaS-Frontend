@@ -1,10 +1,18 @@
-import React from 'react';
+'use client';
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function StaffPage() {
+    const router = useRouter();
+
+    useEffect(() => {
+        router.push('/staff/dashboard');
+    }, [router]);
+
     return (
-        <div className="p-6">
-            <h1 className="text-2xl font-bold mb-4">Staff Portal</h1>
-            <p className="text-slate-600">Welcome to the staff portal. Check-in and event management tools will appear here.</p>
+        <div className="min-h-screen flex items-center justify-center bg-slate-50">
+            <span className="loading loading-spinner loading-lg text-emerald-600"></span>
         </div>
     );
 }

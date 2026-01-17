@@ -28,7 +28,9 @@ export default function LoginPage() {
             setTimeout(() => {
                 if (user.role === 'platform_admin') {
                     router.push('/admin');
-                } else if (user.role === 'TenantAdmin' || user.role === 'staff' || user.tenantId) {
+                } else if (user.role === 'staff') {
+                    router.push('/staff/dashboard');
+                } else if (user.role === 'TenantAdmin' || user.tenantId) {
                     router.push('/tenant-admin');
                 } else {
                     router.push('/tenant-admin');
