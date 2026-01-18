@@ -147,7 +147,7 @@ export default function TenantAdminLayout({
 
                         {/* Navigation */}
                         <ul className="space-y-1 relative z-10">
-                            <p className="px-4 text-[10px] font-bold uppercase tracking-widest text-slate-600 mb-2 mt-2">Platform</p>
+                            <p className="px-4 text-[10px] font-bold uppercase tracking-widest text-slate-600 mb-2 mt-2">Overview</p>
                             <NavItem href="/tenant-admin" icon={LayoutDashboard} label="Dashboard" />
                             <NavItem href="/tenant-admin/events" icon={CalendarDays} label="Events" />
                             <NavItem href="/tenant-admin/orders" icon={ShoppingCart} label="Orders" />
@@ -156,13 +156,26 @@ export default function TenantAdminLayout({
                             <NavItem href="/tenant-admin/tickets" icon={Ticket} label="Tickets" />
                             <NavItem href="/tenant-admin/themes" icon={Palette} label="Themes" />
                             <NavItem href="/tenant-admin/staff" icon={Users} label="Staff" />
-                            <NavItem href="/tenant-admin/profile" icon={User} label="Profile" />
                         </ul>
                     </div>
 
                     {/* User & Logout */}
                     <div className="relative z-10">
                         <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-white/10 to-transparent my-4"></div>
+
+                        {/* Tenant Info */}
+                        <Link href="/tenant-admin/profile" className="block px-4 py-3 mb-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold text-sm shadow-lg">
+                                    TA
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-bold text-white truncate">Tenant Admin</p>
+                                    <p className="text-xs text-slate-400">Profile</p>
+                                </div>
+                            </div>
+                        </Link>
+
                         <button
                             onClick={handleLogout}
                             disabled={loggingOut}

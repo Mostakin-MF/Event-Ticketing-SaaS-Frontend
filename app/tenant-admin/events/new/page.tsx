@@ -194,20 +194,29 @@ export default function CreateEventPage() {
     };
 
     return (
-        <div className="max-w-7xl mx-auto space-y-5 animate-in fade-in duration-500 pb-20">
-            {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <Link href="/tenant-admin/events" className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 font-bold mb-1 transition-colors text-sm">
-                        <ArrowLeft size={14} />
-                        Back to Events
-                    </Link>
-                    <h1 className="text-3xl font-black text-slate-900 tracking-tight">Create New Event</h1>
-                    <p className="text-sm text-slate-500 font-medium">Launch a stunning page for your next big thing.</p>
+        <div className="max-w-7xl mx-auto space-y-6 lg:space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500 pb-20">
+            {/* COMPACT ECOSYSTEM HEADER */}
+            <div className="bg-[#022c22] rounded-3xl p-6 lg:p-8 text-white shadow-xl relative overflow-hidden ring-1 ring-white/10">
+                <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-emerald-500/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+
+                <div className="relative z-10 flex flex-col md:flex-row items-center gap-6">
+                    <div className="w-16 h-16 rounded-2xl bg-emerald-500/20 backdrop-blur-xl border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                        <Plus size={32} />
+                    </div>
+                    <div className="flex-1 text-center md:text-left space-y-1.5">
+                        <Link href="/tenant-admin/events" className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 font-bold mb-1 transition-colors text-[10px] uppercase tracking-widest bg-white/5 px-3 py-1 rounded-full border border-white/10">
+                            <ArrowLeft size={12} />
+                            Back to Matrix
+                        </Link>
+                        <h1 className="text-2xl font-black tracking-tight leading-none uppercase">Initialize Event</h1>
+                        <p className="text-emerald-100/60 text-xs font-medium max-w-xl mx-auto md:mx-0">
+                            Deploying a new operational environment. Configure your event identity, schedule, and theme to begin throughput monitoring.
+                        </p>
+                    </div>
                 </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
                 {/* Main Content Column */}
                 <div className="lg:col-span-8 space-y-5">
 
@@ -230,35 +239,38 @@ export default function CreateEventPage() {
                     )}
 
                     {/* Section 1: Essentials */}
-                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
-                        <div className="flex items-center gap-3 mb-5">
-                            <div className="w-8 h-8 rounded-lg bg-violet-50 text-violet-600 flex items-center justify-center">
-                                <Layout size={18} />
+                    <div className="bg-white p-6 lg:p-8 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100 relative overflow-hidden group">
+                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-teal-500"></div>
+
+                        <div className="flex items-center gap-4 mb-8">
+                            <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shadow-inner">
+                                <Layout size={24} />
                             </div>
                             <div>
-                                <h2 className="text-lg font-bold text-slate-900 leading-none">Essentials</h2>
+                                <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight">Ecosystem Essentials</h2>
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Event Identity & Network Parameters</p>
                             </div>
                         </div>
 
-                        <div className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div className="md:col-span-2 space-y-1.5">
-                                    <label className="text-[10px] font-bold uppercase text-slate-500 tracking-wider">Event Name <span className="text-red-500">*</span></label>
+                        <div className="space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div className="md:col-span-2 space-y-2">
+                                    <label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Event Designation</label>
                                     <input
                                         type="text"
                                         name="name"
                                         required
                                         value={formData.name}
                                         onChange={handleChange}
-                                        placeholder="e.g. Future Tech Summit 2026"
-                                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 outline-none transition-all font-bold text-slate-900 placeholder:font-normal text-sm"
+                                        placeholder="e.g. ULTRA NETWORK SUMMIT"
+                                        className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-50 focus:bg-white focus:border-emerald-500 focus:ring-8 focus:ring-emerald-500/5 outline-none transition-all font-bold text-slate-900 placeholder:text-slate-300 text-sm"
                                     />
                                 </div>
 
-                                <div className="space-y-1.5">
-                                    <label className="text-[10px] font-bold uppercase text-slate-500 tracking-wider">URL Slug <span className="text-red-500">*</span></label>
-                                    <div className="flex rounded-xl bg-slate-50 border border-slate-200 overflow-hidden focus-within:border-violet-500 focus-within:ring-4 focus-within:ring-violet-500/10 transition-all">
-                                        <span className="px-3 py-2 bg-slate-100 text-slate-400 font-bold border-r border-slate-200 text-xs flex items-center">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Network Slug</label>
+                                    <div className="flex rounded-2xl bg-slate-50 border border-slate-50 overflow-hidden focus-within:bg-white focus-within:border-emerald-500 focus-within:ring-8 focus-within:ring-emerald-500/5 transition-all">
+                                        <span className="px-4 py-4 bg-slate-100/50 text-slate-400 font-black border-r border-slate-100 text-[10px]">
                                             /
                                         </span>
                                         <input
@@ -268,57 +280,60 @@ export default function CreateEventPage() {
                                             value={formData.slug}
                                             onChange={handleChange}
                                             placeholder="slug"
-                                            className="flex-1 px-3 py-2 bg-transparent border-none focus:ring-0 text-slate-900 font-bold text-sm"
+                                            className="flex-1 px-4 py-4 bg-transparent border-none focus:ring-0 text-slate-900 font-bold text-sm"
                                         />
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="space-y-1.5">
-                                <label className="text-[10px] font-bold uppercase text-slate-500 tracking-wider">Short Description <span className="text-red-500">*</span></label>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Pulse Description</label>
                                 <textarea
                                     name="description"
                                     required
                                     rows={2}
                                     value={formData.description}
                                     onChange={handleChange}
-                                    placeholder="Brief summary..."
-                                    className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 outline-none transition-all resize-none text-sm font-medium"
+                                    placeholder="Brief operational summary..."
+                                    className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-50 focus:bg-white focus:border-emerald-500 focus:ring-8 focus:ring-emerald-500/5 outline-none transition-all resize-none text-sm font-bold text-slate-700 placeholder:text-slate-300"
                                 />
                             </div>
 
-                            <div className="space-y-1.5">
-                                <label className="text-[10px] font-bold uppercase text-slate-500 tracking-wider">Full Description</label>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Extended Matrix Data</label>
                                 <textarea
                                     name="fullDescription"
                                     rows={4}
                                     value={formData.fullDescription || ''}
                                     onChange={handleChange}
-                                    placeholder="Detailed information..."
-                                    className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 outline-none transition-all resize-none text-sm font-medium"
+                                    placeholder="Detailed environment specifications..."
+                                    className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-50 focus:bg-white focus:border-emerald-500 focus:ring-8 focus:ring-emerald-500/5 outline-none transition-all resize-none text-sm font-medium text-slate-600 placeholder:text-slate-300"
                                 />
                             </div>
                         </div>
                     </div>
 
                     {/* Section: Date & Schedule */}
-                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
-                        <div className="flex items-center gap-3 mb-5">
-                            <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
-                                <Calendar size={18} />
+                    <div className="bg-white p-6 lg:p-8 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100 group">
+                        <div className="flex items-center gap-4 mb-8">
+                            <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center shadow-inner">
+                                <Calendar size={24} />
                             </div>
-                            <h2 className="text-lg font-bold text-slate-900">Schedule</h2>
+                            <div>
+                                <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight">Temporal Window</h2>
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Schedule Configuration & Duration</p>
+                            </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-2 p-4 rounded-xl bg-slate-50/50 border border-slate-100 group transition-all hover:border-emerald-100">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-400"></div>
-                                    <span className="text-[10px] font-black uppercase tracking-tight text-slate-400 group-hover:text-emerald-500 transition-colors">Start Date & Time</span>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-3 p-6 rounded-3xl bg-slate-50/50 border border-slate-50 group transition-all hover:border-emerald-500/20 hover:bg-emerald-50/10">
+                                <div className="flex items-center gap-2 mb-1">
+                                    <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]"></div>
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-emerald-600 transition-colors ml-1">Deployment Start</span>
                                 </div>
                                 <div className="relative group/picker">
-                                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within/picker:text-emerald-500 group-hover/picker:text-emerald-500 pointer-events-none transition-colors">
-                                        <Calendar size={14} />
+                                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within/picker:text-emerald-500 group-hover/picker:text-emerald-500 pointer-events-none transition-colors">
+                                        <Calendar size={16} />
                                     </div>
                                     <input
                                         type="datetime-local"
@@ -335,22 +350,22 @@ export default function CreateEventPage() {
                                             setFormData(prev => ({ ...prev, startAt: isNaN(newDate.getTime()) ? '' : newDate.toISOString() }));
                                         }}
                                         value={getLocalDatetimeValue(formData.startAt as string)}
-                                        className="w-full pl-9 pr-9 py-2.5 rounded-lg bg-white border border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none font-bold text-slate-700 text-sm transition-all cursor-pointer hover:bg-slate-50"
+                                        className="w-full pl-12 pr-12 py-4 rounded-2xl bg-white border border-slate-100 focus:border-emerald-500 focus:ring-8 focus:ring-emerald-500/5 outline-none font-bold text-slate-700 text-sm transition-all cursor-pointer shadow-sm hover:shadow-md"
                                     />
-                                    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within/picker:text-emerald-500 group-hover/picker:text-emerald-500 pointer-events-none transition-colors">
-                                        <Clock size={14} />
+                                    <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within/picker:text-emerald-500 group-hover/picker:text-emerald-500 pointer-events-none transition-colors">
+                                        <Clock size={16} />
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="space-y-2 p-4 rounded-xl bg-slate-50/50 border border-slate-100 group transition-all hover:border-red-100">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-red-400"></div>
-                                    <span className="text-[10px] font-black uppercase tracking-tight text-slate-400 group-hover:text-red-500 transition-colors">End Date & Time</span>
+                            <div className="space-y-3 p-6 rounded-3xl bg-slate-50/50 border border-slate-50 group transition-all hover:border-red-500/20 hover:bg-red-50/10">
+                                <div className="flex items-center gap-2 mb-1">
+                                    <div className="w-2 h-2 rounded-full bg-red-400 shadow-[0_0_8px_rgba(248,113,113,0.6)]"></div>
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-red-600 transition-colors ml-1">Deployment End</span>
                                 </div>
                                 <div className="relative group/picker">
-                                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within/picker:text-red-500 group-hover/picker:text-red-500 pointer-events-none transition-colors">
-                                        <Calendar size={14} />
+                                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within/picker:text-red-500 group-hover/picker:text-red-500 pointer-events-none transition-colors">
+                                        <Calendar size={16} />
                                     </div>
                                     <input
                                         type="datetime-local"
@@ -367,10 +382,10 @@ export default function CreateEventPage() {
                                             setFormData(prev => ({ ...prev, endAt: isNaN(newDate.getTime()) ? '' : newDate.toISOString() }));
                                         }}
                                         value={getLocalDatetimeValue(formData.endAt as string)}
-                                        className="w-full pl-9 pr-9 py-2.5 rounded-lg bg-white border border-slate-200 focus:border-red-500 focus:ring-4 focus:ring-red-500/10 outline-none font-bold text-slate-700 text-sm transition-all cursor-pointer hover:bg-slate-50"
+                                        className="w-full pl-12 pr-12 py-4 rounded-2xl bg-white border border-slate-100 focus:border-red-500 focus:ring-8 focus:ring-red-500/5 outline-none font-bold text-slate-700 text-sm transition-all cursor-pointer shadow-sm hover:shadow-md"
                                     />
-                                    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within/picker:text-red-500 group-hover/picker:text-red-500 pointer-events-none transition-colors">
-                                        <Clock size={14} />
+                                    <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within/picker:text-red-500 group-hover/picker:text-red-500 pointer-events-none transition-colors">
+                                        <Clock size={16} />
                                     </div>
                                 </div>
                             </div>
@@ -379,30 +394,33 @@ export default function CreateEventPage() {
 
 
                     {/* Section: Theme Selection */}
-                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-5 pb-4 border-b border-slate-50">
-                            <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-lg bg-pink-50 text-pink-600 flex items-center justify-center">
-                                    <Palette size={18} />
+                    <div className="bg-white p-6 lg:p-8 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100 group">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 pb-6 border-b border-slate-50">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-2xl bg-pink-50 text-pink-600 flex items-center justify-center shadow-inner">
+                                    <Palette size={24} />
                                 </div>
-                                <h2 className="text-lg font-bold text-slate-900 leading-none">Choose a Theme</h2>
+                                <div>
+                                    <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight">Visual Interface</h2>
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Atmospheric Theme & UI Selection</p>
+                                </div>
                             </div>
 
                             {/* Filter Controls */}
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-3 p-1.5 bg-slate-50 rounded-2xl border border-slate-100">
                                 <select
                                     value={filterPrice}
                                     onChange={(e) => setFilterPrice(e.target.value as any)}
-                                    className="px-2 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs font-bold outline-none"
+                                    className="px-3 py-1.5 rounded-xl bg-white border border-slate-100 text-[10px] font-black uppercase tracking-wider outline-none shadow-sm focus:border-emerald-500 transition-all cursor-pointer"
                                 >
-                                    <option value="all">All Prices</option>
-                                    <option value="free">Free</option>
+                                    <option value="all">Global Tier</option>
+                                    <option value="free">Standard</option>
                                     <option value="premium">Premium</option>
                                 </select>
                                 <select
                                     value={filterCategory}
                                     onChange={(e) => setFilterCategory(e.target.value)}
-                                    className="px-2 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs font-bold outline-none"
+                                    className="px-3 py-1.5 rounded-xl bg-white border border-slate-100 text-[10px] font-black uppercase tracking-wider outline-none shadow-sm focus:border-emerald-500 transition-all cursor-pointer"
                                 >
                                     {categories.map(cat => (
                                         <option key={cat} value={cat} className="capitalize">{cat}</option>
@@ -412,83 +430,84 @@ export default function CreateEventPage() {
                         </div>
 
                         {fetchingThemes ? (
-                            <div className="flex items-center justify-center p-8 text-slate-400">
-                                <span className="loading loading-spinner loading-md mr-2"></span>
-                                Loading themes...
+                            <div className="flex flex-col items-center justify-center p-20 text-slate-400">
+                                <span className="loading loading-spinner loading-lg text-emerald-500 mb-4"></span>
+                                <p className="text-[10px] font-black uppercase tracking-[0.3em]">Synchronizing Theme Matrix...</p>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {filteredThemes.map((theme) => {
                                     const owned = isOwned(theme.id);
+                                    const isSelected = formData.themeId === theme.id;
                                     return (
                                         <div
                                             key={theme.id}
                                             onClick={() => handleThemeSelect(theme.id)}
-                                            className={`group relative cursor-pointer rounded-2xl border-2 transition-all duration-200 overflow-hidden flex flex-col ${formData.themeId === theme.id
-                                                ? 'border-violet-600 bg-violet-50/50 ring-2 ring-violet-200 shadow-xl shadow-violet-500/10'
+                                            className={`group relative cursor-pointer rounded-3xl border-2 transition-all duration-300 overflow-hidden flex flex-col ${isSelected
+                                                ? 'border-emerald-500 bg-emerald-50/10 ring-8 ring-emerald-500/5 shadow-2xl shadow-emerald-500/20'
                                                 : !owned
-                                                    ? 'border-slate-100 opacity-60 grayscale-[0.3]'
-                                                    : 'border-slate-100 hover:border-slate-300 hover:shadow-lg bg-white'
+                                                    ? 'border-slate-100 opacity-60 grayscale-[0.5] hover:grayscale-0 hover:opacity-100'
+                                                    : 'border-slate-50 hover:border-emerald-200 hover:shadow-xl bg-white'
                                                 }`}
                                         >
-                                            <div className="aspect-video bg-slate-200 relative overflow-hidden">
+                                            <div className="aspect-[16/10] bg-slate-100 relative overflow-hidden">
                                                 {theme.thumbnailUrl ? (
                                                     <img
                                                         src={theme.thumbnailUrl}
                                                         alt={theme.name}
-                                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                                                     />
                                                 ) : (
-                                                    <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 bg-slate-100">
-                                                        <Palette size={24} className="mb-2 opacity-50" />
-                                                        <span className="text-xs font-semibold">No Preview</span>
+                                                    <div className="w-full h-full flex flex-col items-center justify-center text-slate-300 bg-slate-50">
+                                                        <Palette size={32} className="mb-2 opacity-20" />
+                                                        <span className="text-[8px] font-black uppercase tracking-widest">No Buffer Data</span>
                                                     </div>
                                                 )}
 
-                                                <div className="absolute top-2 right-2 flex flex-col items-end gap-1">
-                                                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold backdrop-blur-md shadow-sm border ${theme.isPremium
-                                                        ? 'bg-amber-100/90 text-amber-700 border-amber-200/50'
-                                                        : 'bg-white/90 text-slate-700 border-slate-200/50'
+                                                <div className="absolute top-3 right-3 flex flex-col items-end gap-2">
+                                                    <span className={`px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest backdrop-blur-md shadow-xl border ${theme.isPremium
+                                                        ? 'bg-amber-400/90 text-amber-950 border-amber-300 ring-1 ring-amber-400/20'
+                                                        : 'bg-emerald-400/90 text-emerald-950 border-emerald-300 ring-1 ring-emerald-400/20'
                                                         }`}>
-                                                        {theme.isPremium ? `৳${theme.price}` : 'Free'}
+                                                        {theme.isPremium ? `৳${theme.price}` : 'FREE'}
                                                     </span>
                                                     {owned && theme.isPremium && (
-                                                        <span className="px-1.5 py-0.5 rounded text-[8px] font-black bg-emerald-500 text-white uppercase tracking-tighter shadow-sm border border-emerald-400/50">
-                                                            Purchased
+                                                        <span className="px-2 py-0.5 rounded-full text-[7px] font-black bg-white/90 text-emerald-600 uppercase tracking-widest shadow-lg border border-emerald-100">
+                                                            SYNCHRONIZED
                                                         </span>
                                                     )}
                                                 </div>
 
                                                 {!owned && (
-                                                    <div className="absolute inset-0 bg-slate-900/40 flex items-center justify-center backdrop-blur-[1px]">
-                                                        <div className="bg-white/90 text-slate-900 rounded-full p-2 shadow-xl border border-white">
+                                                    <div className="absolute inset-0 bg-slate-900/60 flex items-center justify-center backdrop-blur-[2px] transition-all group-hover:bg-slate-900/40">
+                                                        <div className="bg-white/10 backdrop-blur-xl text-white rounded-2xl p-3 shadow-2xl border border-white/20">
                                                             <Lock size={20} className="animate-pulse" />
                                                         </div>
                                                     </div>
                                                 )}
 
-                                                {formData.themeId === theme.id && (
-                                                    <div className="absolute inset-0 bg-violet-900/40 flex items-center justify-center backdrop-blur-[1px] animate-in fade-in duration-200">
-                                                        <div className="bg-white text-violet-700 rounded-full p-2 shadow-xl scale-in-center">
+                                                {isSelected && (
+                                                    <div className="absolute inset-0 bg-emerald-500/20 flex items-center justify-center backdrop-blur-[1px] animate-in zoom-in duration-300">
+                                                        <div className="bg-white text-emerald-600 rounded-full p-2.5 shadow-2xl scale-in-center border-4 border-emerald-500/20">
                                                             <CheckCircle2 size={24} fill="currentColor" className="text-white" />
                                                         </div>
                                                     </div>
                                                 )}
                                             </div>
 
-                                            <div className="p-3">
-                                                <h3 className="font-bold text-xs text-slate-900 group-hover:text-violet-700 truncate leading-tight mb-1">{theme.name}</h3>
+                                            <div className="p-4 bg-white">
+                                                <h3 className="font-black text-xs text-slate-800 uppercase tracking-wide group-hover:text-emerald-600 transition-colors truncate mb-2">{theme.name}</h3>
 
                                                 <div className="flex items-center justify-between">
                                                     {theme.defaultProperties?.colors && (
-                                                        <div className="flex -space-x-1.5">
+                                                        <div className="flex -space-x-2">
                                                             {Object.entries(theme.defaultProperties.colors)
                                                                 .filter(([key]) => ['primary', 'secondary', 'background', 'accent'].includes(key))
                                                                 .slice(0, 3)
                                                                 .map(([key, color]: any) => (
                                                                     <div
                                                                         key={key}
-                                                                        className="w-4 h-4 rounded-full border border-white shadow-sm"
+                                                                        className="w-5 h-5 rounded-full border-2 border-white shadow-sm ring-1 ring-slate-100"
                                                                         style={{ backgroundColor: color }}
                                                                     />
                                                                 ))}
@@ -501,9 +520,9 @@ export default function CreateEventPage() {
                                                             target="_blank"
                                                             rel="noopener noreferrer"
                                                             onClick={(e) => e.stopPropagation()}
-                                                            className="text-[9px] font-bold text-slate-400 hover:text-violet-600 uppercase tracking-tighter"
+                                                            className="text-[8px] font-black text-slate-400 hover:text-emerald-500 uppercase tracking-[0.2em] transition-colors"
                                                         >
-                                                            Preview
+                                                            Inspect UI
                                                         </a>
                                                     )}
                                                 </div>
@@ -514,13 +533,13 @@ export default function CreateEventPage() {
                             </div>
                         )}
 
-                        <div className="mt-6 pt-6 border-t border-slate-50 flex items-center justify-center">
+                        <div className="mt-10 pt-8 border-t border-slate-50 flex items-center justify-center">
                             <Link
                                 href="/tenant-admin/themes"
-                                className="text-xs font-bold text-violet-600 hover:text-violet-800 flex items-center gap-2 transition-colors uppercase tracking-widest"
+                                className="text-[10px] font-black text-emerald-600 hover:text-emerald-700 flex items-center gap-3 transition-all uppercase tracking-[0.3em] bg-emerald-50/50 px-8 py-4 rounded-2xl border border-emerald-100 hover:shadow-lg hover:-translate-y-0.5"
                             >
                                 <ShoppingBag size={14} />
-                                Get more premium themes from Marketplace
+                                Access Marketplace Hub
                             </Link>
                         </div>
                     </div>
@@ -528,111 +547,124 @@ export default function CreateEventPage() {
 
                 {/* Sidebar Column */}
                 <div className="lg:col-span-4 space-y-5">
-                    {/* Status & Options Card */}
-                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
-                        <div className="flex items-center gap-2 mb-4 text-slate-400">
-                            <Settings size={16} />
-                            <h3 className="font-bold text-slate-900 text-sm leading-none">Settings</h3>
-                        </div>
-
-                        <div className="space-y-4">
-                            <div className="space-y-1.5">
-                                <label className="text-[10px] font-bold uppercase text-slate-500 tracking-wider">Event Status</label>
-                                <select
-                                    name="status"
-                                    value={formData.status}
-                                    onChange={handleChange}
-                                    className="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-200 focus:border-violet-500 focus:outline-none text-slate-900 font-bold text-sm"
-                                >
-                                    <option value={EventStatus.DRAFT}>Draft (Hidden)</option>
-                                    <option value={EventStatus.PUBLISHED}>Published (Live)</option>
-                                    <option value={EventStatus.SCHEDULED}>Scheduled</option>
-                                </select>
+                    {/* Sidebar Column */}
+                    <div className="lg:col-span-4 space-y-6 lg:space-y-8">
+                        {/* Status & Options Card */}
+                        <div className="bg-white p-6 lg:p-8 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100 group">
+                            <div className="flex items-center gap-4 mb-6 text-slate-400">
+                                <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center shadow-inner group-hover:text-emerald-500 transition-colors">
+                                    <Settings size={20} />
+                                </div>
+                                <h3 className="font-black text-slate-900 text-xs uppercase tracking-widest">Global Directives</h3>
                             </div>
 
-                            <div className="space-y-1.5">
-                                <label className="text-[10px] font-bold uppercase text-slate-500 tracking-wider">Tickets Price</label>
-                                <div className="flex rounded-lg bg-slate-50 border border-slate-200 overflow-hidden focus-within:border-emerald-500 transition-all">
-                                    <span className="px-2.5 py-2 bg-slate-100 text-slate-500 font-bold text-xs flex items-center">৳</span>
-                                    <input
-                                        type="number"
-                                        name="price"
-                                        min="0"
-                                        value={formData.price}
+                            <div className="space-y-6">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Deployment State</label>
+                                    <select
+                                        name="status"
+                                        value={formData.status}
                                         onChange={handleChange}
-                                        placeholder="0.00"
-                                        className="flex-1 px-3 py-2 bg-transparent border-none focus:ring-0 text-slate-900 font-bold text-sm"
-                                    />
+                                        className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-50 focus:bg-white focus:border-emerald-500 transition-all text-slate-900 font-bold text-sm outline-none cursor-pointer"
+                                    >
+                                        <option value={EventStatus.DRAFT}>OFFLINE (DRAFT)</option>
+                                        <option value={EventStatus.PUBLISHED}>ACTIVE (LIVE)</option>
+                                        <option value={EventStatus.SCHEDULED}>SCHEDULED</option>
+                                    </select>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Base Access Price</label>
+                                    <div className="flex rounded-2xl bg-slate-50 border border-slate-50 overflow-hidden focus-within:bg-white focus-within:border-emerald-500 transition-all">
+                                        <span className="px-4 py-3 bg-slate-100/50 text-slate-400 font-black text-xs flex items-center border-r border-slate-100">৳</span>
+                                        <input
+                                            type="number"
+                                            name="price"
+                                            min="0"
+                                            value={formData.price}
+                                            onChange={handleChange}
+                                            placeholder="0.00"
+                                            className="flex-1 px-4 py-3 bg-transparent border-none focus:ring-0 text-slate-900 font-bold text-sm"
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    {/* Location & Capacity Card */}
-                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
-                        <div className="flex items-center gap-2 mb-4 text-slate-400">
-                            <MapPin size={16} />
-                            <h3 className="font-bold text-slate-900 text-sm leading-none">Location</h3>
-                        </div>
-
-                        <div className="space-y-4">
-                            <div className="space-y-1.5">
-                                <label className="text-[10px] font-bold uppercase text-slate-500 tracking-wider">Venue</label>
-                                <input
-                                    type="text"
-                                    name="venue"
-                                    value={formData.venue}
-                                    onChange={handleChange}
-                                    placeholder="e.g. Convention Hall"
-                                    className="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-200 text-sm font-bold outline-none focus:border-blue-500"
-                                />
+                        {/* Location & Capacity Card */}
+                        <div className="bg-white p-6 lg:p-8 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100 group">
+                            <div className="flex items-center gap-4 mb-6 text-slate-400">
+                                <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center shadow-inner group-hover:text-blue-500 transition-colors">
+                                    <MapPin size={20} />
+                                </div>
+                                <h3 className="font-black text-slate-900 text-xs uppercase tracking-widest">Geographical Node</h3>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-3">
-                                <div className="space-y-1.5">
-                                    <label className="text-[10px] font-bold uppercase text-slate-500 tracking-wider">City</label>
+                            <div className="space-y-6">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Primary Venue</label>
                                     <input
                                         type="text"
-                                        name="city"
-                                        value={formData.city}
+                                        name="venue"
+                                        value={formData.venue}
                                         onChange={handleChange}
-                                        placeholder="City"
-                                        className="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-200 text-sm font-bold outline-none focus:border-blue-500"
+                                        placeholder="e.g. NATIONAL HUB"
+                                        className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-50 focus:bg-white focus:border-blue-500 transition-all text-sm font-bold text-slate-900 outline-none"
                                     />
                                 </div>
-                                <div className="space-y-1.5">
-                                    <label className="text-[10px] font-bold uppercase text-slate-500 tracking-wider">Capacity</label>
-                                    <input
-                                        type="number"
-                                        name="capacity"
-                                        min="1"
-                                        value={formData.capacity}
-                                        onChange={handleChange}
-                                        className="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-200 text-sm font-bold outline-none focus:border-blue-500"
-                                    />
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">City Node</label>
+                                        <input
+                                            type="text"
+                                            name="city"
+                                            value={formData.city}
+                                            onChange={handleChange}
+                                            placeholder="City"
+                                            className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-50 focus:bg-white focus:border-blue-500 transition-all text-sm font-bold text-slate-900 outline-none"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Capacity</label>
+                                        <input
+                                            type="number"
+                                            name="capacity"
+                                            min="1"
+                                            value={formData.capacity}
+                                            onChange={handleChange}
+                                            className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-50 focus:bg-white focus:border-blue-500 transition-all text-sm font-bold text-slate-900 outline-none"
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    {/* Submit Action */}
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full bg-slate-900 hover:bg-black text-white py-4 rounded-xl font-bold text-base shadow-xl shadow-slate-900/20 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:hover:scale-100 flex items-center justify-center gap-2"
-                    >
-                        {loading ? (
-                            <>
-                                <span className="loading loading-spinner loading-sm"></span>
-                                Creating...
-                            </>
-                        ) : (
-                            <>
-                                <Save size={18} />
-                                Create Event
-                            </>
-                        )}
-                    </button>
+                        {/* Submit Action */}
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="w-full relative group/btn overflow-hidden rounded-3xl p-1"
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-teal-600 group-hover:scale-105 transition-transform duration-500"></div>
+                            <div className="relative bg-slate-900 group-hover:bg-slate-900/0 text-white py-5 rounded-[1.4rem] font-black text-xs uppercase tracking-[0.3em] flex items-center justify-center gap-3 transition-all duration-300">
+                                {loading ? (
+                                    <>
+                                        <span className="loading loading-spinner loading-xs"></span>
+                                        Synchronizing...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Save size={18} className="group-hover:rotate-12 transition-transform" />
+                                        Initialize Matrix
+                                    </>
+                                )}
+                            </div>
+                        </button>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest text-center px-4">
+                            * Verify all operational parameters before initializing the event environment.
+                        </p>
+                    </div>
                 </div>
             </form>
         </div>

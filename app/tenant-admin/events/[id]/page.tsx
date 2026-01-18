@@ -154,7 +154,6 @@ export default function EditEventPage() {
     const handleThemeSelect = (themeId: string) => {
         if (!isOwned(themeId)) {
             setError("You don't own this premium theme yet. Please buy it from the Themes Marketplace.");
-            // Scroll to the error message (approx location or use a ref)
             window.scrollTo({ top: 0, behavior: 'smooth' });
             return;
         }
@@ -166,7 +165,6 @@ export default function EditEventPage() {
         setError(null);
         setSuccessMessage(null);
 
-        // Basic validation
         if (!formData.name || !formData.slug || !formData.startAt || !formData.endAt) {
             setError('Please fill in all required fields (Name, Slug, Dates).');
             return;
@@ -191,10 +189,8 @@ export default function EditEventPage() {
                 end_at: endIso as any,
             };
 
-            console.log('Updating event with data:', payload);
             await tenantAdminService.updateEvent(eventId, payload as CreateEventDto);
             setSuccessMessage('Event updated successfully!');
-            // Optional: scroll to top
             window.scrollTo({ top: 0, behavior: 'smooth' });
         } catch (err: any) {
             console.error('Update error:', err);
@@ -223,15 +219,14 @@ export default function EditEventPage() {
 
     if (loading) {
         return (
-            <div className="max-w-5xl mx-auto space-y-8 p-6">
-                <div className="h-12 w-48 bg-slate-200 rounded-lg animate-pulse mb-8"></div>
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div className="lg:col-span-2 space-y-8">
-                        <div className="h-96 bg-slate-200 rounded-3xl animate-pulse"></div>
-                        <div className="h-64 bg-slate-200 rounded-3xl animate-pulse"></div>
+            <div className="max-w-6xl mx-auto space-y-6 p-6">
+                <div className="h-48 bg-slate-200 rounded-3xl animate-pulse"></div>
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <div className="lg:col-span-8 space-y-6">
+                        <div className="h-[400px] bg-slate-100 rounded-3xl animate-pulse"></div>
                     </div>
-                    <div className="space-y-8">
-                        <div className="h-64 bg-slate-200 rounded-3xl animate-pulse"></div>
+                    <div className="lg:col-span-4 space-y-6">
+                        <div className="h-[200px] bg-slate-100 rounded-3xl animate-pulse"></div>
                     </div>
                 </div>
             </div>
@@ -239,161 +234,190 @@ export default function EditEventPage() {
     }
 
     return (
-        <div className="max-w-6xl mx-auto p-4 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
-            {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-                <div>
-                    <Link href="/tenant-admin/events" className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 font-bold mb-2 transition-colors text-xs">
-                        <ArrowLeft size={14} />
-                        Back to Events
-                    </Link>
-                    <h1 className="text-2xl font-black text-slate-900 tracking-tight">Edit Event</h1>
-                    <p className="text-slate-500 font-medium text-sm mt-0.5">Update details for <span className="text-slate-900 font-bold">"{formData.name}"</span></p>
-                </div>
-                <div className="flex items-center gap-2">
-                    <Link
-                        href={`/tenant-admin/events/${eventId}/customize`}
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-violet-100/50 text-violet-700 font-bold hover:bg-violet-100 transition-all border border-violet-200 text-sm"
-                    >
-                        <Palette size={16} />
-                        Customize Theme
-                    </Link>
-                    <span className="text-slate-900/10">|</span>
-                    <a
-                        href={`/${formData.slug}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-100 text-slate-700 font-bold hover:bg-slate-200 transition-all text-sm"
-                    >
-                        <ExternalLink size={16} />
-                        {(formData.status === 'active' || formData.status === 'published') ? 'View Live' : 'Preview'}
-                    </a>
-                </div>
-            </div>
+        <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500 pb-20 px-4 lg:px-0">
+            {/* ATMOSPHERIC OPERATION HEADER */}
+            <div className="bg-[#022c22] rounded-3xl p-6 lg:p-8 text-white shadow-2xl relative overflow-hidden ring-1 ring-white/10 group">
+                {/* Background Patterns */}
+                <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-emerald-500/10 to-transparent z-0 opacity-50"></div>
+                <div className="absolute -top-16 -right-16 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl group-hover:bg-emerald-500/20 transition-all duration-700 pointer-events-none"></div>
 
-            <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-                {/* Main Content Column */}
-                <div className="lg:col-span-8 space-y-5">
-
-                    {/* Error Alert */}
-                    {error && (
-                        <div className="bg-red-50 border border-red-200 rounded-xl p-3 flex items-start gap-3">
-                            <AlertCircle className="text-red-600 flex-shrink-0 mt-0.5" size={18} />
-                            <div className="flex-1 text-red-700 font-medium text-sm">
-                                {Array.isArray(error) ? (
-                                    <ul className="list-disc pl-4 space-y-1">
-                                        {error.map((err, i) => (
-                                            <li key={i}>{typeof err === 'string' ? err : JSON.stringify(err)}</li>
-                                        ))}
-                                    </ul>
-                                ) : (
-                                    <p>{error}</p>
-                                )}
+                <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div className="space-y-3 max-w-2xl">
+                        <Link href="/tenant-admin/events" className="inline-flex items-center gap-2 text-emerald-500/80 hover:text-emerald-400 font-black text-[9px] uppercase tracking-[0.3em] transition-all group/back">
+                            <ArrowLeft size={14} className="group-hover/back:-translate-x-1 transition-transform" />
+                            Return to Matrix
+                        </Link>
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center backdrop-blur-md shadow-xl">
+                                <Settings size={24} className="text-emerald-400" />
                             </div>
-                        </div>
-                    )}
-
-                    {/* Success Alert */}
-                    {successMessage && (
-                        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex items-center gap-3">
-                            <div className="w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center flex-shrink-0">
-                                <span className="text-white text-xs font-bold">✓</span>
-                            </div>
-                            <p className="text-emerald-700 font-medium text-sm">{successMessage}</p>
-                        </div>
-                    )}
-
-                    {/* Basic Info Card */}
-                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
-                        <div className="flex items-center gap-3 mb-4 border-b border-slate-50 pb-4">
-                            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                                <Type size={18} />
-                            </div>
-                            <div>
-                                <h2 className="text-lg font-bold text-slate-900">Event Essentials</h2>
-                            </div>
-                        </div>
-
-                        <div className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-1.5">
-                                    <label className="text-[10px] font-bold uppercase text-slate-500 tracking-wider">Event Name <span className="text-red-500">*</span></label>
-                                    <input
-                                        type="text"
-                                        name="name"
-                                        required
-                                        value={formData.name || ''}
-                                        onChange={handleChange}
-                                        className="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 outline-none font-bold text-slate-900 placeholder-slate-400 transition-all text-sm"
-                                    />
-                                </div>
-                                <div className="space-y-1.5">
-                                    <label className="text-[10px] font-bold uppercase text-slate-500 tracking-wider">URL Slug <span className="text-red-500">*</span></label>
-                                    <div className="flex">
-                                        <span className="inline-flex items-center px-3 py-2 rounded-l-lg bg-slate-100 text-slate-500 font-medium border-y border-l border-slate-200 text-xs">
-                                            /
-                                        </span>
-                                        <input
-                                            type="text"
-                                            name="slug"
-                                            required
-                                            value={formData.slug || ''}
-                                            onChange={handleChange}
-                                            className="flex-1 px-3 py-2 rounded-r-lg bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 outline-none font-bold text-slate-900 transition-all text-sm"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="space-y-1.5">
-                                <label className="text-[10px] font-bold uppercase text-slate-500 tracking-wider">Short Description <span className="text-red-500">*</span></label>
-                                <textarea
-                                    name="description"
-                                    required
-                                    rows={2}
-                                    value={formData.description || ''}
-                                    onChange={handleChange}
-                                    className="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 outline-none font-medium text-slate-900 resize-none transition-all text-sm"
-                                />
+                            <div className="flex flex-col gap-0.5">
+                                <span className="text-[8px] font-black uppercase tracking-[0.4em] text-emerald-500/80">Operation Brief</span>
+                                <h1 className="text-xl lg:text-2xl font-black tracking-tight text-white uppercase leading-none">
+                                    {formData.name || 'Untitled Operation'}
+                                </h1>
                             </div>
                         </div>
                     </div>
 
-                    {/* Location & Capacity */}
-                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
-                        <div className="flex items-center gap-3 mb-4 border-b border-slate-50 pb-4">
-                            <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
-                                <MapPin size={18} />
+                    <div className="flex items-center gap-2.5">
+                        <Link
+                            href={`/tenant-admin/events/${eventId}/customize`}
+                            className="bg-violet-500/10 hover:bg-violet-500/20 text-violet-400 px-5 py-3 rounded-xl font-black text-[9px] uppercase tracking-[0.3em] backdrop-blur-md border border-violet-500/20 transition-all active:scale-95 flex items-center gap-2 shadow-xl shadow-violet-500/5"
+                        >
+                            <Palette size={14} strokeWidth={3} />
+                            Customize
+                        </Link>
+                        <a
+                            href={`/${formData.slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-white/10 hover:bg-white/20 text-white px-5 py-3 rounded-xl font-black text-[9px] uppercase tracking-[0.3em] backdrop-blur-md border border-white/10 transition-all active:scale-95 flex items-center gap-2 shadow-xl"
+                        >
+                            <ExternalLink size={14} strokeWidth={3} />
+                            {(formData.status === 'active' || formData.status === 'published') ? 'Live' : 'Preview'}
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                {/* Main Content Column */}
+                <div className="lg:col-span-8 space-y-6">
+
+                    {/* ALERT FEED */}
+                    {(error || successMessage) && (
+                        <div className="space-y-4">
+                            {error && (
+                                <div className="bg-red-500/5 border border-red-500/20 rounded-2xl p-5 flex items-start gap-4 animate-in slide-in-from-top-2 duration-300">
+                                    <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center flex-shrink-0 text-red-500 shadow-lg shadow-red-500/20">
+                                        <AlertCircle size={20} />
+                                    </div>
+                                    <div className="flex-1 pt-0.5">
+                                        <h4 className="text-[9px] font-black uppercase tracking-widest text-red-500 mb-1">System Error Response</h4>
+                                        <div className="text-[10px] font-bold text-red-900/70 uppercase tracking-tight leading-relaxed">
+                                            {Array.isArray(error) ? (
+                                                <ul className="list-disc pl-4 space-y-1">
+                                                    {error.map((err, i) => (
+                                                        <li key={i}>{typeof err === 'string' ? err : JSON.stringify(err)}</li>
+                                                    ))}
+                                                </ul>
+                                            ) : (
+                                                <p>{error}</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {successMessage && (
+                                <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-2xl p-5 flex items-center gap-4 animate-in slide-in-from-top-2 duration-300">
+                                    <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center flex-shrink-0 text-emerald-500 shadow-lg shadow-emerald-500/20">
+                                        <CheckCircle2 size={20} />
+                                    </div>
+                                    <div className="flex-1">
+                                        <h4 className="text-[9px] font-black uppercase tracking-widest text-emerald-500 mb-0.5">Operation Successful</h4>
+                                        <p className="text-[10px] font-bold text-emerald-900/70 uppercase tracking-tight">{successMessage}</p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* STRATEGIC ESSENTIALS */}
+                    <div className="bg-white p-6 lg:p-8 rounded-3xl shadow-xl shadow-slate-200/40 border border-slate-100 space-y-6 relative overflow-hidden group">
+                        <div className="flex items-center gap-4 border-b border-slate-50 pb-6">
+                            <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shadow-inner">
+                                <Type size={24} />
                             </div>
                             <div>
-                                <h2 className="text-lg font-bold text-slate-900">Location & Capacity</h2>
+                                <h2 className="text-lg font-black text-slate-900 uppercase tracking-tight leading-none mb-1">Strategic Essentials</h2>
+                                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">Core Identity & Operational Narrative</p>
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-1.5">
-                                <label className="text-[10px] font-bold uppercase text-slate-500 tracking-wider">Venue Name</label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+                            <div className="space-y-2.5 group/field">
+                                <label className="text-[9px] font-black uppercase text-slate-400 tracking-[0.3em] group-focus-within/field:text-emerald-500 transition-colors">Operation Codename</label>
+                                <input
+                                    type="text"
+                                    name="name"
+                                    required
+                                    placeholder="Enter operation name..."
+                                    value={formData.name || ''}
+                                    onChange={handleChange}
+                                    className="w-full px-5 py-4 rounded-xl bg-slate-50 border-2 border-transparent focus:bg-white focus:border-emerald-500 transition-all text-xs font-black text-slate-900 outline-none shadow-inner"
+                                />
+                            </div>
+
+                            <div className="space-y-2.5 group/field">
+                                <label className="text-[9px] font-black uppercase text-slate-400 tracking-[0.3em] group-focus-within/field:text-emerald-500 transition-colors">Digital Path (Slug)</label>
+                                <div className="flex relative">
+                                    <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 font-black text-xs">/</div>
+                                    <input
+                                        type="text"
+                                        name="slug"
+                                        required
+                                        value={formData.slug || ''}
+                                        onChange={handleChange}
+                                        className="w-full pl-10 pr-5 py-4 rounded-xl bg-slate-50 border-2 border-transparent focus:bg-white focus:border-emerald-500 transition-all text-xs font-black text-slate-900 outline-none shadow-inner"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="space-y-2.5 group/field">
+                            <label className="text-[9px] font-black uppercase text-slate-400 tracking-[0.3em] group-focus-within/field:text-emerald-500 transition-colors">Executive Summary</label>
+                            <textarea
+                                name="description"
+                                required
+                                rows={3}
+                                placeholder="Provide a high-level briefing of the operation..."
+                                value={formData.description || ''}
+                                onChange={handleChange}
+                                className="w-full px-5 py-4 rounded-xl bg-slate-50 border-2 border-transparent focus:bg-white focus:border-emerald-500 transition-all text-xs font-bold text-slate-900 outline-none shadow-inner resize-none min-h-[100px]"
+                            />
+                        </div>
+                    </div>
+
+                    {/* DEPLOYMENT CONFIGURATION */}
+                    <div className="bg-white p-6 lg:p-8 rounded-3xl shadow-xl shadow-slate-200/40 border border-slate-100 space-y-6 relative overflow-hidden">
+                        <div className="flex items-center gap-4 border-b border-slate-50 pb-6">
+                            <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shadow-inner">
+                                <MapPin size={24} />
+                            </div>
+                            <div>
+                                <h2 className="text-lg font-black text-slate-900 uppercase tracking-tight leading-none mb-1">Deployment Config</h2>
+                                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">Geolocation & Unit Capacity</p>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+                            <div className="space-y-2.5 group/field">
+                                <label className="text-[9px] font-black uppercase text-slate-400 tracking-[0.3em] group-focus-within/field:text-blue-500 transition-colors">Installation Venue</label>
                                 <input
                                     type="text"
                                     name="venue"
+                                    placeholder="Briefing location..."
                                     value={formData.venue || ''}
                                     onChange={handleChange}
-                                    className="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none font-bold text-slate-900 transition-all text-sm"
+                                    className="w-full px-5 py-4 rounded-xl bg-slate-50 border-2 border-transparent focus:bg-white focus:border-blue-500 transition-all text-xs font-black text-slate-900 outline-none shadow-inner"
                                 />
                             </div>
-                            <div className="space-y-1.5">
-                                <label className="text-[10px] font-bold uppercase text-slate-500 tracking-wider">City</label>
+                            <div className="space-y-2.5 group/field">
+                                <label className="text-[9px] font-black uppercase text-slate-400 tracking-[0.3em] group-focus-within/field:text-blue-500 transition-colors">Sector (City)</label>
                                 <input
                                     type="text"
                                     name="city"
+                                    placeholder="Operational region..."
                                     value={formData.city || ''}
                                     onChange={handleChange}
-                                    className="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none font-bold text-slate-900 transition-all text-sm"
+                                    className="w-full px-5 py-4 rounded-xl bg-slate-50 border-2 border-transparent focus:bg-white focus:border-blue-500 transition-all text-xs font-black text-slate-900 outline-none shadow-inner"
                                 />
                             </div>
-                            <div className="space-y-1.5">
-                                <label className="text-[10px] font-bold uppercase text-slate-500 tracking-wider flex items-center gap-1">
-                                    <Users size={12} /> Capacity
+                            <div className="space-y-2.5 group/field">
+                                <label className="text-[9px] font-black uppercase text-slate-400 tracking-[0.3em] group-focus-within/field:text-blue-500 transition-colors flex items-center gap-2">
+                                    <Users size={12} strokeWidth={3} /> Max Capacity
                                 </label>
                                 <input
                                     type="number"
@@ -401,47 +425,50 @@ export default function EditEventPage() {
                                     min="1"
                                     value={formData.capacity}
                                     onChange={handleChange}
-                                    className="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none font-bold text-slate-900 transition-all text-sm"
+                                    className="w-full px-5 py-4 rounded-xl bg-slate-50 border-2 border-transparent focus:bg-white focus:border-blue-500 transition-all text-xs font-black text-slate-900 outline-none shadow-inner"
                                 />
                             </div>
-                            <div className="space-y-1.5">
-                                <label className="text-[10px] font-bold uppercase text-slate-500 tracking-wider">Country</label>
+                            <div className="space-y-2.5 group/field opacity-60">
+                                <label className="text-[9px] font-black uppercase text-slate-400 tracking-[0.3em]">National Jurisdiction</label>
                                 <input
                                     type="text"
                                     name="country"
                                     readOnly
                                     value={formData.country || ''}
-                                    className="w-full px-3 py-2 rounded-lg bg-slate-100 border border-slate-200 text-slate-500 font-bold cursor-not-allowed text-sm"
+                                    className="w-full px-5 py-4 rounded-xl bg-slate-100 border-2 border-transparent text-xs font-black text-slate-400 outline-none cursor-not-allowed"
                                 />
                             </div>
                         </div>
                     </div>
 
-                    {/* Theme Selection */}
-                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 border-b border-slate-50 pb-4">
-                            <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-lg bg-pink-50 text-pink-600 flex items-center justify-center">
-                                    <Palette size={18} />
+                    {/* VISUAL MATRIX (THEME SELECTION) */}
+                    <div className="bg-white p-6 lg:p-8 rounded-3xl shadow-xl shadow-slate-200/40 border border-slate-100 space-y-6 relative overflow-hidden">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-50 pb-6">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center shadow-inner">
+                                    <Palette size={24} />
                                 </div>
-                                <h2 className="text-lg font-bold text-slate-900">Theme</h2>
+                                <div>
+                                    <h2 className="text-lg font-black text-slate-900 uppercase tracking-tight leading-none mb-1">Visual Matrix</h2>
+                                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">Atmospheric Interface Configuration</p>
+                                </div>
                             </div>
 
-                            {/* Filter Controls (Compact) */}
-                            <div className="flex items-center gap-2">
+                            {/* Matrix Filters */}
+                            <div className="flex items-center gap-2.5">
                                 <select
                                     value={filterPrice}
                                     onChange={(e) => setFilterPrice(e.target.value as any)}
-                                    className="px-2 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs font-bold outline-none"
+                                    className="px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-100 text-[9px] font-black uppercase tracking-widest text-slate-500 outline-none focus:bg-white focus:border-pink-500 transition-all cursor-pointer shadow-inner"
                                 >
                                     <option value="all">All Prices</option>
-                                    <option value="free">Free</option>
+                                    <option value="free">Free Only</option>
                                     <option value="premium">Premium</option>
                                 </select>
                                 <select
                                     value={filterCategory}
                                     onChange={(e) => setFilterCategory(e.target.value)}
-                                    className="px-2 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs font-bold outline-none"
+                                    className="px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-[9px] font-black uppercase tracking-widest text-slate-500 outline-none focus:bg-white focus:border-pink-500 transition-all cursor-pointer shadow-inner"
                                 >
                                     {categories.map(cat => (
                                         <option key={cat} value={cat} className="capitalize">{cat}</option>
@@ -451,72 +478,74 @@ export default function EditEventPage() {
                         </div>
 
                         {fetchingThemes ? (
-                            <div className="flex items-center justify-center p-8 text-slate-400">
-                                <span className="loading loading-spinner loading-sm mr-2"></span>
-                                <span className="text-xs">Loading...</span>
+                            <div className="flex flex-col items-center justify-center py-16 text-slate-300 gap-4">
+                                <span className="loading loading-spinner loading-md text-pink-500"></span>
+                                <span className="text-[9px] font-black uppercase tracking-[0.3em] animate-pulse">Scanning Visual Assets...</span>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
                                 {filteredThemes.map((theme) => {
                                     const owned = isOwned(theme.id);
+                                    const selected = formData.themeId === theme.id;
                                     return (
                                         <div
                                             key={theme.id}
                                             onClick={() => handleThemeSelect(theme.id)}
-                                            className={`group relative cursor-pointer rounded-xl border-2 transition-all duration-200 overflow-hidden flex flex-col ${formData.themeId === theme.id
-                                                ? 'border-violet-600 bg-violet-50/50 ring-2 ring-violet-200'
+                                            className={`group relative cursor-pointer rounded-2xl border-2 transition-all duration-500 overflow-hidden flex flex-col ${selected
+                                                ? 'border-violet-600 shadow-xl shadow-violet-200 ring-4 ring-violet-50'
                                                 : !owned
-                                                    ? 'border-slate-100 opacity-60 grayscale-[0.3]'
-                                                    : 'border-slate-100 hover:border-slate-300 hover:shadow-md bg-white'
+                                                    ? 'border-slate-100 opacity-60 grayscale shadow-inner'
+                                                    : 'border-slate-50 hover:border-slate-200 hover:shadow-xl bg-white active:scale-95'
                                                 }`}
                                         >
-                                            <div className="aspect-video bg-slate-200 relative overflow-hidden">
+                                            <div className="aspect-[16/10] bg-slate-100 relative overflow-hidden">
                                                 {theme.thumbnailUrl ? (
                                                     <img
                                                         src={theme.thumbnailUrl}
                                                         alt={theme.name}
-                                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
                                                     />
                                                 ) : (
-                                                    <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 bg-slate-100">
-                                                        <Palette size={16} className="mb-1 opacity-50" />
-                                                        <span className="text-[10px] font-semibold">No Preview</span>
+                                                    <div className="w-full h-full flex flex-col items-center justify-center text-slate-300 bg-slate-50">
+                                                        <Palette size={20} className="mb-1.5 opacity-50" />
+                                                        <span className="text-[9px] font-black uppercase tracking-widest">No Pattern</span>
                                                     </div>
                                                 )}
 
-                                                <div className="absolute top-2 right-2 flex flex-col items-end gap-1">
-                                                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold backdrop-blur-md shadow-sm border ${theme.isPremium
-                                                        ? 'bg-amber-100/90 text-amber-700 border-amber-200/50'
-                                                        : 'bg-white/90 text-slate-700 border-slate-200/50'
+                                                <div className="absolute top-3 right-3 flex flex-col items-end gap-1.5">
+                                                    <span className={`px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest backdrop-blur-md shadow-lg border ${theme.isPremium
+                                                        ? 'bg-amber-500/90 text-white border-amber-400/50'
+                                                        : 'bg-white/90 text-slate-700 border-slate-100'
                                                         }`}>
-                                                        {theme.isPremium ? `৳${theme.price}` : 'Free'}
+                                                        {theme.isPremium ? `৳${theme.price}` : 'Default'}
                                                     </span>
                                                     {owned && theme.isPremium && (
-                                                        <span className="px-1.5 py-0.5 rounded text-[8px] font-black bg-emerald-500 text-white uppercase tracking-tighter shadow-sm border border-emerald-400/50">
-                                                            Purchased
+                                                        <span className="px-2 py-1 rounded-lg text-[8px] font-black bg-emerald-500 text-white uppercase tracking-widest shadow-lg border border-emerald-400">
+                                                            Authorized
                                                         </span>
                                                     )}
                                                 </div>
 
                                                 {!owned && (
-                                                    <div className="absolute inset-0 bg-slate-900/40 flex items-center justify-center backdrop-blur-[1px]">
-                                                        <div className="bg-white/90 text-slate-900 rounded-full p-2 shadow-xl border border-white">
-                                                            <Lock size={20} className="animate-pulse" />
+                                                    <div className="absolute inset-0 bg-slate-900/60 flex items-center justify-center backdrop-blur-[2px] animate-in fade-in duration-500">
+                                                        <div className="bg-white text-slate-900 rounded-2xl p-4 shadow-2xl border border-white">
+                                                            <Lock size={24} className="animate-pulse" />
                                                         </div>
                                                     </div>
                                                 )}
 
-                                                {formData.themeId === theme.id && (
-                                                    <div className="absolute inset-0 bg-violet-900/40 flex items-center justify-center backdrop-blur-[1px]">
-                                                        <div className="bg-white text-violet-700 rounded-full p-2 shadow-xl">
-                                                            <CheckCircle2 size={24} fill="currentColor" className="text-white" />
+                                                {selected && (
+                                                    <div className="absolute inset-0 bg-violet-900/40 flex items-center justify-center backdrop-blur-[2px] animate-in zoom-in-95 duration-500">
+                                                        <div className="bg-white text-violet-600 rounded-full p-4 shadow-2xl ring-8 ring-white/20">
+                                                            <CheckCircle2 size={32} />
                                                         </div>
                                                     </div>
                                                 )}
                                             </div>
 
-                                            <div className="p-3">
-                                                <h3 className="font-bold text-xs text-slate-900 group-hover:text-violet-700 truncate">{theme.name}</h3>
+                                            <div className="p-4 flex items-center justify-between bg-white border-t border-slate-50">
+                                                <h3 className="font-black text-[11px] text-slate-900 uppercase tracking-tight group-hover:text-violet-600 transition-colors truncate">{theme.name}</h3>
+                                                {selected && <span className="text-[9px] font-black text-violet-600 uppercase tracking-widest shrink-0">Selected</span>}
                                             </div>
                                         </div>
                                     );
@@ -524,119 +553,143 @@ export default function EditEventPage() {
                             </div>
                         )}
 
-                        <div className="mt-4 pt-4 border-t border-slate-50 flex items-center justify-center">
+                        <div className="mt-6 pt-6 border-t border-slate-50 flex items-center justify-center">
                             <Link
                                 href="/tenant-admin/themes"
-                                className="text-[10px] font-bold text-violet-600 hover:text-violet-800 flex items-center gap-1 transition-colors uppercase tracking-widest"
+                                className="px-8 py-4 rounded-2xl bg-slate-900 text-white text-[9px] font-black uppercase tracking-[0.3em] hover:bg-black transition-all group flex items-center gap-3 shadow-xl shadow-slate-900/10"
                             >
-                                <ShoppingBag size={12} />
-                                Get more premium themes from Marketplace
+                                <ShoppingBag size={12} className="group-hover:animate-bounce" />
+                                Acquire More Asset Patterns
                             </Link>
                         </div>
                     </div>
                 </div>
 
                 {/* Sidebar Column */}
-                <div className="lg:col-span-4 space-y-5">
+                <div className="lg:col-span-4 space-y-6">
 
-                    {/* Actions Card */}
-                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 sticky top-6">
-                        <div className="flex items-center gap-2 mb-4 text-slate-400">
-                            <Settings size={16} />
-                            <h3 className="font-bold text-slate-900 text-sm">Actions</h3>
+                    {/* ACTIONS HUB */}
+                    <div className="bg-white p-6 lg:p-7 rounded-3xl shadow-xl shadow-slate-200/40 border border-slate-100 sticky top-10 space-y-6 ring-1 ring-slate-100">
+                        <div className="flex items-center gap-3 border-b border-slate-50 pb-6">
+                            <div className="w-10 h-10 rounded-xl bg-slate-50 text-slate-900 flex items-center justify-center shadow-inner">
+                                <Settings size={20} />
+                            </div>
+                            <div>
+                                <h3 className="font-black text-slate-900 uppercase tracking-tight text-sm leading-none mb-1 text-slate-900">Action Hub</h3>
+                                <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest leading-none">Mission Critical Operations</p>
+                            </div>
                         </div>
-                        <div className="flex flex-col gap-2.5">
+
+                        <div className="flex flex-col gap-4">
                             <button
                                 type="submit"
                                 disabled={saving}
-                                className="w-full inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-black text-white px-4 py-3 rounded-lg font-bold text-sm shadow-lg shadow-slate-900/20 transition-all active:scale-[0.98] disabled:opacity-70"
+                                className="w-full relative overflow-hidden bg-[#022c22] hover:bg-black text-white px-7 py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] shadow-xl shadow-emerald-900/20 transition-all active:scale-[0.98] disabled:opacity-70 group/save"
                             >
-                                {saving ? <span className="loading loading-spinner loading-xs"></span> : <Save size={16} />}
-                                {saving ? 'Saving...' : 'Save Changes'}
+                                <div className="absolute inset-0 bg-emerald-500 translate-y-full group-hover/save:translate-y-[85%] transition-transform duration-700 opacity-20"></div>
+                                <div className="relative z-10 flex items-center justify-center gap-3">
+                                    {saving ? <span className="loading loading-spinner loading-xs"></span> : <Save size={18} strokeWidth={3} />}
+                                    {saving ? 'Syncing...' : 'Save Configuration'}
+                                </div>
                             </button>
 
                             <Link
                                 href={`/tenant-admin/events/${eventId}/customize`}
-                                className="w-full inline-flex items-center justify-center gap-2 bg-slate-100 text-slate-700 hover:bg-slate-200 px-4 py-3 rounded-lg font-bold transition-all text-sm"
+                                className="w-full flex items-center justify-center gap-3 bg-violet-600 text-white hover:bg-violet-700 px-7 py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] transition-all shadow-xl shadow-violet-600/10 active:scale-95"
                             >
-                                <Palette size={16} />
-                                Customize Theme
+                                <Palette size={18} strokeWidth={3} />
+                                Customize
                             </Link>
 
                             <button
                                 type="button"
                                 onClick={() => setShowDeleteModal(true)}
-                                className="w-full inline-flex items-center justify-center gap-2 text-red-600 hover:bg-red-50 px-4 py-2 rounded-lg font-bold transition-all text-xs mt-2"
+                                className="w-full flex items-center justify-center gap-3 text-red-500/50 hover:text-red-500 hover:bg-red-50 px-7 py-3 rounded-xl font-black text-[9px] uppercase tracking-[0.3em] transition-all border-2 border-transparent hover:border-red-50 mt-2 active:scale-95"
                             >
-                                <Trash2 size={14} />
-                                Delete Event
+                                <Trash2 size={16} />
+                                Terminate Operation
                             </button>
                         </div>
                     </div>
 
-                    {/* Date/Time */}
-                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
-                        <div className="flex items-center gap-2 mb-3">
-                            <Calendar size={16} className="text-red-500" />
-                            <h3 className="font-bold text-slate-900 text-sm">Schedule</h3>
+                    {/* OPERATIONAL SCHEDULE */}
+                    <div className="bg-white p-6 lg:p-8 rounded-3xl shadow-xl shadow-slate-200/40 border border-slate-100 space-y-6">
+                        <div className="flex items-center gap-3 border-b border-slate-50 pb-6">
+                            <div className="w-10 h-10 rounded-xl bg-red-50 text-red-500 flex items-center justify-center shadow-inner">
+                                <Calendar size={20} />
+                            </div>
+                            <div>
+                                <h3 className="font-black text-slate-900 uppercase tracking-tight text-sm leading-none mb-1 text-red-600/80">Schedule</h3>
+                                <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest leading-none">Temporal Constraints</p>
+                            </div>
                         </div>
 
-                        <div className="space-y-3">
-                            <div className="space-y-1">
-                                <label className="text-[10px] font-bold uppercase text-slate-500 tracking-wider">Start</label>
+                        <div className="space-y-6">
+                            <div className="space-y-2 group/field">
+                                <label className="text-[9px] font-black uppercase text-slate-400 tracking-[0.3em] group-focus-within/field:text-red-500 transition-colors">Activation Sequence</label>
                                 <input
                                     type="datetime-local"
                                     name="startAt"
                                     required
                                     value={formData.startAt as string}
                                     onChange={handleChange}
-                                    className="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-200 focus:border-red-500 focus:ring-2 focus:ring-red-500/10 outline-none font-bold text-slate-700 text-xs"
+                                    className="w-full px-5 py-3.5 rounded-xl bg-slate-50 border-2 border-transparent focus:bg-white focus:border-red-500 transition-all text-[11px] font-black text-slate-700 outline-none shadow-inner"
                                 />
                             </div>
-                            <div className="space-y-1">
-                                <label className="text-[10px] font-bold uppercase text-slate-500 tracking-wider">End</label>
+                            <div className="space-y-2 group/field">
+                                <label className="text-[9px] font-black uppercase text-slate-400 tracking-[0.3em] group-focus-within/field:text-red-500 transition-colors">Termination Sequence</label>
                                 <input
                                     type="datetime-local"
                                     name="endAt"
                                     required
                                     value={formData.endAt as string}
                                     onChange={handleChange}
-                                    className="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-200 focus:border-red-500 focus:ring-2 focus:ring-red-500/10 outline-none font-bold text-slate-700 text-xs"
+                                    className="w-full px-5 py-3.5 rounded-xl bg-slate-50 border-2 border-transparent focus:bg-white focus:border-red-500 transition-all text-[11px] font-black text-slate-700 outline-none shadow-inner"
                                 />
                             </div>
                         </div>
                     </div>
 
-                    {/* Status */}
-                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
-                        <div className="flex items-center gap-2 mb-3">
-                            <AlertCircle size={16} className="text-amber-500" />
-                            <h3 className="font-bold text-slate-900 text-sm">Status</h3>
+                    {/* DEPLOYMENT STATUS */}
+                    <div className="bg-white p-6 lg:p-8 rounded-3xl shadow-xl shadow-slate-200/40 border border-slate-100 space-y-6">
+                        <div className="flex items-center gap-3 border-b border-slate-50 pb-6">
+                            <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center shadow-inner">
+                                <AlertCircle size={20} />
+                            </div>
+                            <div>
+                                <h3 className="font-black text-slate-900 uppercase tracking-tight text-sm leading-none mb-1 text-amber-600/80">Status</h3>
+                                <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest leading-none">Mission Lifecycle</p>
+                            </div>
                         </div>
 
-                        <div className="space-y-3">
-                            <select
-                                name="status"
-                                value={(formData.status as EventStatus) || EventStatus.DRAFT}
-                                onChange={handleChange}
-                                className="w-full px-3 py-2.5 rounded-lg bg-slate-50 border border-slate-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/10 outline-none font-bold text-slate-900 text-sm"
-                            >
-                                <option value={EventStatus.DRAFT}>Draft</option>
-                                <option value={EventStatus.PUBLISHED}>Published</option>
-                                <option value={EventStatus.SCHEDULED}>Scheduled</option>
-                                <option value={EventStatus.ACTIVE}>Active</option>
-                                <option value={EventStatus.CANCELLED}>Cancelled</option>
-                                <option value={EventStatus.COMPLETED}>Completed</option>
-                            </select>
+                        <div className="space-y-5">
+                            <div className="relative group/field">
+                                <select
+                                    name="status"
+                                    value={(formData.status as EventStatus) || EventStatus.DRAFT}
+                                    onChange={handleChange}
+                                    className="w-full px-5 py-4 rounded-xl bg-slate-50 border-2 border-transparent focus:bg-white focus:border-amber-500 outline-none font-black text-slate-900 text-xs shadow-inner appearance-none cursor-pointer pr-12"
+                                >
+                                    <option value={EventStatus.DRAFT}>DRAFT (LOCK)</option>
+                                    <option value={EventStatus.PUBLISHED}>PUBLISHED (INTEL)</option>
+                                    <option value={EventStatus.SCHEDULED}>SCHEDULED (WAIT)</option>
+                                    <option value={EventStatus.ACTIVE}>ACTIVE (LIVE)</option>
+                                    <option value={EventStatus.CANCELLED}>CANCELLED (TERM)</option>
+                                    <option value={EventStatus.COMPLETED}>COMPLETED (ARCH)</option>
+                                </select>
+                                <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-amber-500 opacity-50">
+                                    <ExternalLink size={14} />
+                                </div>
+                            </div>
 
-                            <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-                                <p className="text-[10px] text-slate-500 leading-relaxed">
-                                    {formData.status === EventStatus.DRAFT && '🔒 Not visible to public.'}
-                                    {formData.status === EventStatus.PUBLISHED && '🌍 Visible to public.'}
-                                    {formData.status === EventStatus.SCHEDULED && '📅 Visible, no sales.'}
-                                    {formData.status === EventStatus.ACTIVE && '🎟️ Tickets on sale.'}
-                                    {formData.status === EventStatus.CANCELLED && '❌ Event cancelled.'}
-                                    {formData.status === EventStatus.COMPLETED && '🏁 Event ended.'}
+                            <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100 ring-1 ring-slate-100 shadow-inner">
+                                <p className="text-[9px] font-black text-slate-400 leading-relaxed uppercase tracking-widest italic text-center">
+                                    {formData.status === EventStatus.DRAFT && 'System Status: Locked. Assets encrypted.'}
+                                    {formData.status === EventStatus.PUBLISHED && 'System Status: Intel Active. Operations public.'}
+                                    {formData.status === EventStatus.SCHEDULED && 'System Status: Standby. Sales in queue.'}
+                                    {formData.status === EventStatus.ACTIVE && 'System Status: Live. Operations mission-critical.'}
+                                    {formData.status === EventStatus.CANCELLED && 'System Status: Aborted. Access keys revoked.'}
+                                    {formData.status === EventStatus.COMPLETED && 'System Status: Archived. Logs stored in vault.'}
                                 </p>
                             </div>
                         </div>
@@ -645,40 +698,44 @@ export default function EditEventPage() {
                 </div>
             </form>
 
-            {/* Delete Modal (Same as before) */}
+            {/* CRITICAL OVERRIDE HUB (DELETE MODAL) */}
             {showDeleteModal && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-                    <div className="bg-white rounded-3xl shadow-2xl max-w-sm w-full animate-in zoom-in-95 duration-200 overflow-hidden">
-                        <div className="p-6 bg-red-50 border-b border-red-100">
-                            <h2 className="text-xl font-bold text-red-900 flex items-center gap-2">
-                                <AlertCircle className="text-red-600" size={24} />
-                                Delete Event?
-                            </h2>
+                <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-50 p-4 backdrop-blur-md animate-in fade-in duration-300">
+                    <div className="bg-white rounded-[2rem] shadow-2xl max-w-sm w-full animate-in zoom-in-95 duration-300 overflow-hidden border border-slate-50">
+                        <div className="p-8 bg-red-50 border-b border-red-100 flex flex-col items-center text-center space-y-5">
+                            <div className="w-20 h-20 rounded-3xl bg-white flex items-center justify-center text-red-600 shadow-2xl shadow-red-200/50">
+                                <Trash2 size={40} strokeWidth={2.5} />
+                            </div>
+                            <div className="space-y-1.5">
+                                <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight leading-none">Critical Override</h2>
+                                <p className="text-[9px] font-bold text-red-500 uppercase tracking-widest">Permanent Deletion Protocol</p>
+                            </div>
                         </div>
 
-                        <div className="p-6">
-                            <p className="text-slate-600 mb-4 leading-relaxed">
-                                Are you sure you want to delete <span className="font-bold text-slate-900">"{formData.name}"</span>?
+                        <div className="p-8 space-y-6">
+                            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em] text-center leading-relaxed">
+                                You are about to terminate all datasets associated with <span className="text-slate-900 font-black">"{formData.name}"</span>. This action is terminal.
                             </p>
-                            <p className="text-xs text-red-500 font-bold uppercase tracking-wide bg-red-50 px-3 py-2 rounded-lg inline-block">
-                                ⚠️ This action cannot be undone
-                            </p>
+                            <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 flex items-center gap-4 shadow-inner">
+                                <AlertCircle size={24} className="text-amber-500 flex-shrink-0" />
+                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.1em] leading-relaxed">Warning: All records and configurations will be permanently purged.</p>
+                            </div>
                         </div>
 
-                        <div className="flex gap-3 p-6 border-t border-slate-100 bg-slate-50">
+                        <div className="flex gap-4 p-8 border-t border-slate-50 bg-slate-50/50">
                             <button
                                 onClick={() => setShowDeleteModal(false)}
                                 disabled={saving}
-                                className="flex-1 px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold hover:bg-slate-50 transition-all shadow-sm"
+                                className="flex-1 px-6 py-4 rounded-xl bg-white border-2 border-slate-200 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-slate-900 hover:border-slate-300 transition-all shadow-sm active:scale-95"
                             >
-                                Cancel
+                                Abort
                             </button>
                             <button
                                 onClick={handleDelete}
                                 disabled={saving}
-                                className="flex-1 px-4 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold transition-all shadow-md shadow-red-600/20"
+                                className="flex-1 px-6 py-4 rounded-xl bg-red-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-red-700 transition-all shadow-xl shadow-red-600/30 active:scale-95"
                             >
-                                {saving ? 'Deleting...' : 'Delete'}
+                                {saving ? 'Terminating...' : 'Terminate'}
                             </button>
                         </div>
                     </div>
