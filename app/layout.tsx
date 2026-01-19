@@ -17,6 +17,8 @@ export const metadata: Metadata = {
   description: "The leading multi-tenant ticketing solution for organizers in Bangladesh. Fast, reliable, and localized.",
 };
 
+import { PusherProvider } from "@/components/providers/PusherProvider";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -28,7 +30,9 @@ export default function RootLayout({
         suppressHydrationWarning
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <PusherProvider>
+          {children}
+        </PusherProvider>
       </body>
     </html>
   );

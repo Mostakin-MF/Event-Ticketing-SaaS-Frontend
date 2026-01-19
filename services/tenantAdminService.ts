@@ -21,6 +21,10 @@ export interface CreateEventDto {
     startAt: Date | string;
     endAt: Date | string;
     status?: EventStatus;
+    // Extended Fields
+    fullDescription?: string;
+    capacity?: number;
+    price?: number;
     // Theme Fields
     themeId?: string;
     themeContent?: any;
@@ -349,8 +353,8 @@ export const tenantAdminService = {
         return response.data;
     },
 
-    purchaseTheme: async (themeId: string, paymentMethodId: string) => {
-        const response = await api.post(`/tenant-admin/themes/${themeId}/purchase`, { paymentMethodId });
+    purchaseTheme: async (themeId: string, paymentMethod: string) => {
+        const response = await api.post(`/tenant-admin/themes/${themeId}/purchase`, { paymentMethod });
         return response.data;
     },
 

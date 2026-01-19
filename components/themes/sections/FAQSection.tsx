@@ -21,12 +21,12 @@ export default function FAQSection({ content, colors, fonts, isLight }: FAQProps
             <div className="container mx-auto">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
                     <div>
-                        <span className="text-sm font-bold uppercase tracking-widest mb-4 block" style={{ color: colors.secondary }}>Support</span>
+                        <span className="text-sm font-bold uppercase tracking-widest mb-4 block" style={{ color: colors.secondary }}>{content.subHeading || 'Support'}</span>
                         <h2 className="text-4xl md:text-5xl font-black mb-6" style={{ color: colors.text, fontFamily: fonts.heading }}>
-                            Frequently Asked <br /> Questions
+                            {content.heading || <>Frequently Asked <br /> Questions</>}
                         </h2>
                         <p className={`max-w-md mb-10 ${isLight ? 'text-slate-600' : 'text-slate-400'}`} style={{ fontFamily: fonts.body }}>
-                            Have questions about tickets, travel, or the venue? We have gathered answers to the most common inquiries.
+                            {content.description || 'Have questions about tickets, travel, or the venue? We have gathered answers to the most common inquiries.'}
                         </p>
                         <button
                             className={`px-8 py-3 rounded-xl border font-bold transition-all ${isLight

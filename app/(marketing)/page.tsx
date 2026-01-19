@@ -3,227 +3,279 @@
 import Image from "next/image";
 import Link from "next/link";
 import {
-  Ticket,
   ShieldCheck,
   Zap,
-  Smartphone,
+  Ticket,
   BarChart3,
-  Users,
   Globe,
-  ArrowRight
+  ArrowRight,
+  Check,
+  CreditCard,
+  QrCode,
+  Layout,
+  Sparkles,
+  Users,
+  Mic2
 } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="bg-slate-50 font-sans text-slate-900">
+    <div className="bg-slate-50 font-sans text-slate-900 selection:bg-emerald-500/30 selection:text-emerald-800 min-h-screen">
 
-      <main>
-        {/* Hero Section */}
-        <section className="relative overflow-hidden pt-20 pb-32 lg:pt-32">
-          <div className="mx-auto max-w-7xl px-6">
-            <div className="grid items-center gap-12 lg:grid-cols-2">
-              <div className="flex flex-col gap-8 text-center lg:text-left">
-                <div className="inline-flex self-center lg:self-start items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5 text-sm font-semibold text-primary">
-                  <span className="relative flex h-2 w-2">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75"></span>
-                    <span className="relative inline-flex h-2 w-2 rounded-full bg-primary"></span>
-                  </span>
-                  Ready for Bangladesh Standard Time (BST)
-                </div>
+      {/* GLOBAL GRAIN TEXTURE */}
+      <div className="fixed inset-0 opacity-[0.03] pointer-events-none mix-blend-multiply z-50 bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
 
-                <h1 className="text-5xl font-extrabold tracking-tight text-slate-900 sm:text-6xl lg:text-7xl">
-                  Empowering <span className="text-primary italic">Bangladesh's</span> Event Organizers
-                </h1>
+      <main className="relative overflow-hidden">
 
-                <p className="max-w-xl text-lg leading-relaxed text-slate-600 self-center lg:self-start">
-                  The most advanced, multi-tenant ticketing SaaS built for local needs.
-                  Accept bKash, Nagad, and Rocket payments with ease.
-                </p>
+        {/* FESTIVAL HERO */}
+        <section className="relative pt-24 pb-16 lg:pt-32 lg:pb-24 px-6 overflow-hidden">
+          {/* Background Effects */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-emerald-500/10 rounded-full blur-[150px] opacity-60 mix-blend-multiply -z-10"></div>
 
-                <div className="flex flex-col gap-4 sm:flex-row sm:justify-center lg:justify-start">
-                  <Link href="/admin" className="btn btn-primary btn-lg rounded-full px-8 shadow-xl shadow-primary/30 group">
-                    Start Selling Now
-                    <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                  <button className="btn btn-outline btn-lg rounded-full px-8 bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-primary">
-                    View Demo
-                  </button>
-                </div>
+          <div className="mx-auto max-w-[1400px]">
+            <div className="flex flex-col items-center text-center">
 
-                <div className="flex items-center justify-center gap-6 lg:justify-start">
-                  <div className="flex -space-x-3 overflow-hidden">
-                    {[1, 2, 3, 4].map((i) => (
-                      <div key={i} className="inline-block h-10 w-10 rounded-full border-2 border-white bg-slate-200">
-                        <img
-                          src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i + 10}`}
-                          alt="User avatar"
-                          className="h-full w-full rounded-full"
-                        />
+              {/* HYPE PILL */}
+              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-white/50 px-4 py-1.5 mb-8 backdrop-blur-md transition-transform hover:scale-105 shadow-sm">
+                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-emerald-600">Tickets LIVE</span>
+                <div className="h-3 w-[1px] bg-emerald-500/30"></div>
+                <span className="text-xs font-bold text-emerald-800 flex items-center gap-1">
+                  Use code <span className="text-emerald-950">LAUNCH26</span>
+                </span>
+              </div>
+
+              {/* MASSIVE HEADLINE */}
+              <h1 className="max-w-4xl text-5xl md:text-7xl font-black tracking-tighter text-slate-900 mb-6 leading-[0.95] uppercase drop-shadow-sm">
+                The Operating System <br /> for <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-cyan-600 to-emerald-600 animate-gradient-x">Mega Events</span>
+              </h1>
+
+              <p className="max-w-2xl text-lg md:text-xl text-slate-600 font-medium leading-relaxed mb-10">
+                Join 20,000+ organizers powering the next generation of festivals, concerts, and conferences.
+              </p>
+
+              {/* CTAs */}
+              <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto items-center justify-center mb-20">
+                <Link href="/admin" className="group h-12 px-8 rounded-full bg-emerald-600 text-white font-black text-sm uppercase tracking-wide inline-flex items-center justify-center gap-2 transition-all hover:bg-emerald-500 hover:scale-[1.02] shadow-lg shadow-emerald-500/20">
+                  Start Selling
+                  <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
+                </Link>
+                <Link href="/pricing" className="h-12 px-8 rounded-full border-2 border-slate-200 bg-white text-slate-900 font-bold text-sm uppercase tracking-wide inline-flex items-center justify-center gap-2 transition-all hover:bg-slate-50 hover:border-slate-300">
+                  See Pricing
+                </Link>
+              </div>
+
+              {/* FEATURE SPLIT - BULLET POINTS & DASHBOARD */}
+              <div className="mt-20 w-full max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-20 items-center text-left">
+
+                {/* LEFT: SUPPORTING POINTS */}
+                <div className="flex flex-col gap-8 order-2 lg:order-1">
+                  <div className="space-y-4">
+                    <h3 className="text-2xl md:text-3xl font-black text-slate-900 uppercase tracking-wide">
+                      Total Control <br /> <span className="text-emerald-600">Over Your Event</span>
+                    </h3>
+                    <p className="text-slate-600 font-medium leading-relaxed">
+                      Manage everything from ticket tiers to gate entry in one unified dashboard.
+                    </p>
+                  </div>
+
+                  <ul className="space-y-6">
+                    <li className="flex items-start gap-4">
+                      <div className="mt-1 h-8 w-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 border border-emerald-200">
+                        <BarChart3 size={16} />
                       </div>
-                    ))}
-                  </div>
-                  <div className="text-sm font-medium text-slate-600">
-                    Trusted by <span className="text-slate-900 font-bold">500+</span> Event Organizers in BD
+                      <div>
+                        <h4 className="font-bold text-slate-900 uppercase tracking-wider text-sm">Real-time Analytics</h4>
+                        <p className="text-sm text-slate-600 mt-1">Track sales, revenue, and visits as they happen.</p>
+                      </div>
+                    </li>
+                    <li className="flex items-start gap-4">
+                      <div className="mt-1 h-8 w-8 rounded-full bg-cyan-100 flex items-center justify-center text-cyan-600 border border-cyan-200">
+                        <Ticket size={16} />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-slate-900 uppercase tracking-wider text-sm">Instant Ticket Gen</h4>
+                        <p className="text-sm text-slate-600 mt-1">Generate unique QR codes for every attendee instantly.</p>
+                      </div>
+                    </li>
+                    <li className="flex items-start gap-4">
+                      <div className="mt-1 h-8 w-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 border border-amber-200">
+                        <ShieldCheck size={16} />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-slate-900 uppercase tracking-wider text-sm">Fraud Prevention</h4>
+                        <p className="text-sm text-slate-600 mt-1">Bank-grade security prevents duplicate or fake tickets.</p>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+
+                {/* RIGHT: SMALLER DASHBOARD */}
+                <div className="relative perspective-[2000px] group order-1 lg:order-2 flex justify-center lg:justify-end">
+                  {/* Glow */}
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] h-[90%] bg-emerald-500/20 blur-[100px] opacity-40 -z-10 rounded-full animate-pulse-slow"></div>
+
+                  <div className="relative w-full max-w-md rounded-xl border border-slate-200 bg-white shadow-2xl overflow-hidden transform transition-all duration-700 ease-out rotate-y-[-12deg] rotate-x-[5deg] group-hover:rotate-y-[-5deg] group-hover:rotate-x-0 ring-1 ring-slate-900/5 animate-float">
+                    {/* Chrome Header */}
+                    <div className="h-8 w-full bg-slate-50 border-b border-slate-200 flex items-center px-4 gap-2">
+                      <div className="h-2 w-2 rounded-full bg-red-400"></div>
+                      <div className="h-2 w-2 rounded-full bg-amber-400"></div>
+                      <div className="h-2 w-2 rounded-full bg-emerald-400"></div>
+                    </div>
+
+                    <img
+                      src="/hero_organizer_dashboard_preview_1766508040458.png"
+                      alt="TicketBD Dashboard"
+                      className="w-full h-auto opacity-100 block"
+                    />
+                    {/* Reflection */}
+                    <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent pointer-events-none opacity-50"></div>
                   </div>
                 </div>
+
               </div>
 
-              <div className="relative">
-                <div className="absolute -inset-1 rounded-2xl bg-gradient-to-tr from-primary/30 to-secondary/30 blur-2xl"></div>
-                <div className="relative rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl">
-                  <img
-                    src="/hero_organizer_dashboard_preview_1766508040458.png"
-                    alt="TicketBD Dashboard Preview"
-                    className="rounded-xl w-full h-auto"
-                  />
-                </div>
-              </div>
             </div>
           </div>
         </section>
 
-        {/* How it Works Section */}
-        <section className="bg-slate-50 py-24">
-          <div className="mx-auto max-w-7xl px-6">
+        <section className="py-8 border-y border-slate-200 bg-white overflow-hidden">
+          <div className="flex gap-16 animate-marquee whitespace-nowrap items-center">
+            <span className="text-xl font-black text-slate-500 uppercase tracking-widest">Global Partners</span>
+            <SponsorLogo name="TechFest" />
+            <SponsorLogo name="SummerVibe" />
+            <SponsorLogo name="CorpSummit" />
+            <SponsorLogo name="DhakaComicon" />
+            <SponsorLogo name="MusicWave" />
+            <SponsorLogo name="StartupGrind" />
+            <SponsorLogo name="FoodieFest" />
+            {/* Repeat for seamless loop */}
+            <span className="text-xl font-black text-slate-500 uppercase tracking-widest">Global Partners</span>
+            <SponsorLogo name="TechFest" />
+            <SponsorLogo name="SummerVibe" />
+            <SponsorLogo name="CorpSummit" />
+            <SponsorLogo name="DhakaComicon" />
+          </div>
+        </section>
+
+
+        {/* STATS - BIG & BOLD */}
+        <section className="py-20 px-6 bg-white">
+          <div className="mx-auto max-w-[1400px]">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center md:text-left">
+              <StatBig value="50M+" label="Ticket Revenue" />
+              <StatBig value="200K" label="Attendees" />
+              <StatBig value="1.2K" label="Events Live" />
+              <StatBig value="0.0s" label="Downtime" />
+            </div>
+          </div>
+        </section>
+
+
+        {/* FEATURES - VIP PASS STAGED CARDS */}
+        <section className="py-20 px-6 relative bg-slate-50">
+          <div className="mx-auto max-w-[1400px]">
             <div className="mb-16 text-center">
-              <h2 className="text-base font-bold uppercase tracking-wider text-primary">Simple Process</h2>
-              <p className="mt-4 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
-                How TicketBD Works
-              </p>
+              <h2 className="text-sm font-bold text-emerald-600 uppercase tracking-widest mb-3">The Lineup</h2>
+              <h3 className="text-4xl md:text-5xl font-black text-slate-900 uppercase leading-tight">
+                Everything Included <br /> <span className="text-slate-400">In Your Pass</span>
+              </h3>
             </div>
 
-            <div className="grid gap-12 md:grid-cols-3">
-              <StepCard
-                number="01"
-                title="Create Your Tenant"
-                description="Register your organization and customize your branded ticket store in minutes."
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+              <FeaturePass
+                title="Instant Configure"
+                desc="Launch your event page in seconds. No coding required."
+                icon={<Zap size={32} className="text-amber-600" />}
+                color="bg-amber-100"
               />
-              <StepCard
-                number="02"
-                title="Configure Events"
-                description="Set up event details, ticket tiers (VIP, GA), and BDT pricing with local payment options."
+              <FeaturePass
+                title="Mobile Entry"
+                desc="Scan tickets with our lightning fast organizer app."
+                icon={<QrCode size={32} className="text-emerald-600" />}
+                color="bg-emerald-100"
               />
-              <StepCard
-                number="03"
-                title="Sell & Scan"
-                description="Launch your event, accept mobile payments, and use our staff app for seamless QR check-ins."
+              <FeaturePass
+                title="Local Payments"
+                desc="bKash, Nagad, Rocket baked right into checkout."
+                icon={<CreditCard size={32} className="text-cyan-600" />}
+                color="bg-cyan-100"
               />
-            </div>
-          </div>
-        </section>
-
-        {/* Features Section */}
-        <section id="features" className="bg-white py-24">
-          <div className="mx-auto max-w-7xl px-6">
-            <div className="mb-16 text-center">
-              <h2 className="text-base font-bold uppercase tracking-wider text-primary">Platform Features</h2>
-              <p className="mt-4 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
-                Everything you need to sell out.
-              </p>
-            </div>
-
-            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              <FeatureCard
-                icon={<Smartphone className="text-primary" size={24} />}
-                title="Mobile First Checkout"
-                description="Optimized ticketing experience for Dhaka's mobile users. Lightning fast and secure."
+              <FeaturePass
+                title="CRM & Data"
+                desc="Own your audience. Export data or sync with tools."
+                icon={<Users size={32} className="text-pink-600" />}
+                color="bg-pink-100"
               />
-              <FeatureCard
-                icon={<ShieldCheck className="text-secondary" size={24} />}
-                title="Secure Payments"
-                description="Built-in integration for bKash, Nagad, Rocket and international cards via SSLCommerz/Stripe."
+              <FeaturePass
+                title="Custom Brand"
+                desc="White-label solution to keep your brand front and center."
+                icon={<Layout size={32} className="text-purple-600" />}
+                color="bg-purple-100"
               />
-              <FeatureCard
-                icon={<Zap className="text-primary" size={24} />}
-                title="Instant QR Generation"
-                description="Tickets are generated instantly with secure, signed QR codes for fast venue entry."
-              />
-              <FeatureCard
-                icon={<BarChart3 className="text-secondary" size={24} />}
-                title="Advanced Analytics"
-                description="Track sales, attendee demographics, and scan-in rates in real-time from your dashboard."
-              />
-              <FeatureCard
-                icon={<Users className="text-primary" size={24} />}
-                title="Multi-Tenant Isolation"
-                description="Each organizer gets a private, branded space with their own custom domain support."
-              />
-              <FeatureCard
-                icon={<Globe className="text-secondary" size={24} />}
-                title="Localized Support"
-                description="Proudly made in Bangladesh, for Bangladesh. 24/7 support in Bengali and English."
+              <FeaturePass
+                title="Support 24/7"
+                desc="We're awake when your event is happening."
+                icon={<Mic2 size={32} className="text-slate-700" />}
+                color="bg-white"
               />
             </div>
           </div>
         </section>
 
-        {/* Stats Section */}
-        <section className="bg-accent py-20 text-white">
-          <div className="mx-auto max-w-7xl px-6 text-center">
-            <div className="grid gap-12 sm:grid-cols-3">
-              <div>
-                <div className="text-5xl font-extrabold text-secondary">৳50M+</div>
-                <div className="mt-2 text-slate-300 font-medium italic">Processed in Sales</div>
-              </div>
-              <div>
-                <div className="text-5xl font-extrabold text-white">200K+</div>
-                <div className="mt-2 text-slate-300 font-medium italic">Tickets Scanned</div>
-              </div>
-              <div>
-                <div className="text-5xl font-extrabold text-secondary">500+</div>
-                <div className="mt-2 text-slate-300 font-medium italic">Active Organizers</div>
-              </div>
-            </div>
-          </div>
-        </section>
+        {/* CTA - MASSIVE GRADIENT */}
+        <section className="py-16 px-6">
+          <div className="mx-auto max-w-[1400px]">
+            <div className="relative rounded-[2.5rem] bg-gradient-to-r from-emerald-500 to-teal-500 p-10 md:p-14 text-center text-white overflow-hidden shadow-2xl shadow-emerald-500/30">
+              <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
 
-        {/* Call to Action */}
-        <section className="py-24">
-          <div className="mx-auto max-w-7xl px-6">
-            <div className="relative overflow-hidden rounded-3xl bg-primary px-8 py-16 text-center shadow-2xl sm:px-16">
-              <div className="relative z-10 mx-auto max-w-2xl">
-                <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
-                  Ready to host your next big event?
+              <div className="relative z-10">
+                <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter mb-5 text-white">
+                  Ready to Scale?
                 </h2>
-                <p className="mt-6 text-lg text-emerald-100 italic">
-                  Join the leading event management platform in Bangladesh. Set up your first event in less than 5 minutes.
+                <p className="text-lg md:text-xl font-bold mb-8 opacity-90 text-emerald-50 max-w-2xl mx-auto">
+                  Join the fastest growing event platform in Bangladesh today.
                 </p>
-                <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
-                  <Link href="/admin" className="btn bg-white text-primary border-none hover:bg-slate-50 btn-lg rounded-full px-12 font-bold shadow-xl">
-                    Get Started for Free
-                  </Link>
-                </div>
+                <Link href="/admin" className="h-12 px-8 rounded-full bg-white text-emerald-900 font-black text-sm uppercase tracking-wide inline-flex items-center justify-center gap-2 transition-transform hover:scale-105 hover:bg-slate-50">
+                  Get Your Account
+                  <ArrowRight size={18} />
+                </Link>
               </div>
-              {/* Abstract Background Shapes */}
-              <div className="absolute -top-24 -left-24 h-64 w-64 rounded-full bg-emerald-400 opacity-20 blur-3xl"></div>
-              <div className="absolute -bottom-24 -right-24 h-80 w-80 rounded-full bg-secondary opacity-30 blur-3xl"></div>
             </div>
           </div>
         </section>
-      </main>
 
+      </main>
     </div>
   );
 }
 
-function FeatureCard({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) {
+function StatBig({ label, value }: { label: string, value: string }) {
   return (
-    <div className="group rounded-2xl border border-slate-100 bg-slate-50 p-8 transition-all hover:border-primary/20 hover:bg-white hover:shadow-xl hover:shadow-primary/10">
-      <div className="mb-6 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-white shadow-sm ring-1 ring-slate-200 group-hover:bg-primary/5 transition-colors">
+    <div className="flex flex-col border-l-4 border-emerald-500 pl-6">
+      <span className="text-4xl md:text-6xl font-black text-slate-900 tracking-tighter mb-2">{value}</span>
+      <span className="text-sm font-bold text-emerald-600 uppercase tracking-widest">{label}</span>
+    </div>
+  )
+}
+
+function FeaturePass({ icon, title, desc, color }: { icon: any, title: string, desc: string, color: string }) {
+  return (
+    <div className="group relative bg-white border border-slate-200 hover:border-emerald-500/50 rounded-3xl p-8 transition-all hover:-translate-y-2 shadow-sm hover:shadow-xl">
+      <div className={`mb-6 h-12 w-12 rounded-xl ${color} flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform`}>
         {icon}
       </div>
-      <h3 className="mb-3 text-xl font-bold text-slate-900">{title}</h3>
-      <p className="text-slate-600 leading-relaxed italic">{description}</p>
+      <h3 className="text-xl font-black text-slate-900 uppercase mb-3 tracking-wide group-hover:text-emerald-600 transition-colors">{title}</h3>
+      <p className="text-slate-600 text-base leading-relaxed font-medium">
+        {desc}
+      </p>
     </div>
-  );
+  )
 }
 
-function StepCard({ number, title, description }: { number: string, title: string, description: string }) {
+function SponsorLogo({ name }: { name: string }) {
   return (
-    <div className="relative p-8 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-      <div className="text-5xl font-black text-slate-100 absolute top-4 right-6">{number}</div>
-      <h3 className="text-xl font-bold text-slate-900 mb-3 relative z-10">{title}</h3>
-      <p className="text-slate-600 italic relative z-10">{description}</p>
+    <div className="px-6 text-xl font-bold text-slate-400 uppercase tracking-tighter hover:text-slate-600 transition-colors cursor-default">
+      {name}
     </div>
-  );
+  )
 }

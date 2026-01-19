@@ -18,9 +18,9 @@ export default function VenueSection({ content, colors, fonts, isLight }: VenueP
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                     <div className="space-y-8">
                         <div>
-                            <span className="text-sm font-bold uppercase tracking-widest mb-4 block" style={{ color: colors.secondary }}>Location</span>
+                            <span className="text-sm font-bold uppercase tracking-widest mb-4 block" style={{ color: colors.secondary }}>{content.subHeading || 'Location'}</span>
                             <h2 className="text-4xl md:text-5xl font-black mb-6" style={{ color: colors.text, fontFamily: fonts.heading }}>
-                                Join Us at <br /> {content.name || 'The Main Stage'}
+                                {content.heading || <>Join Us at <br /> {content.name || 'The Main Stage'}</>}
                             </h2>
                         </div>
 
@@ -65,13 +65,18 @@ export default function VenueSection({ content, colors, fonts, isLight }: VenueP
                             </div>
                         </div>
 
-                        <button
-                            className="px-8 py-4 rounded-2xl font-bold inline-flex items-center gap-2 text-white transition-all hover:gap-4"
-                            style={{ backgroundColor: colors.primary }}
-                        >
-                            Open in Google Maps
-                            <Navigation size={18} />
-                        </button>
+                        {content.mapUrl && (
+                            <a
+                                href={content.mapUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="px-8 py-4 rounded-2xl font-bold inline-flex items-center gap-2 text-white transition-all hover:gap-4 table"
+                                style={{ backgroundColor: colors.primary }}
+                            >
+                                Open in Google Maps
+                                <Navigation size={18} />
+                            </a>
+                        )}
                     </div>
 
                     <div className="relative group grayscale hover:grayscale-0 transition-all duration-700">
