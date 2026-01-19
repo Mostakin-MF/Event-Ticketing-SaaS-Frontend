@@ -3,8 +3,10 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { authService } from '@/services/authService';
-import { Mail, Lock, Loader2, ArrowRight, User as UserIcon, Ticket, ShieldCheck, Phone, Calendar, Globe, MapPin } from 'lucide-react';
+import { Mail, Lock, Loader2, ArrowRight, User as UserIcon, Ticket, ShieldCheck, Phone, Calendar, Globe, MapPin, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
+import { attendeeRegistrationSchema } from '@/lib/validations/attendee';
+import { z } from 'zod';
 
 export default function AttendeeSignupPage() {
     const router = useRouter();
@@ -19,24 +21,30 @@ export default function AttendeeSignupPage() {
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState('');
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
     const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError('');
+        setFieldErrors({});
 
         try {
-
-            await authService.registerAttendee({ 
-                email, 
-                password, 
+            // Validate form data with Zod
+            const formData = {
                 fullName: name,
+                email,
+                password,
                 phoneNumber: phone,
                 dateOfBirth: dob,
-                gender: gender,
-                country: country,
-                city: city
-            });
+                gender: gender || undefined,
+                country,
+                city
+            };
+
+            const validatedData = attendeeRegistrationSchema.parse(formData);
+
+            await authService.registerAttendee(validatedData);
             setSuccess(true);
 
             setTimeout(() => {
@@ -44,7 +52,21 @@ export default function AttendeeSignupPage() {
             }, 1000);
         } catch (err: any) {
             console.error(err);
-            setError(err.response?.data?.message || 'Registration failed. Please try again.');
+            
+            // Handle Zod validation errors
+            if (err instanceof z.ZodError) {
+                const errors: Record<string, string> = {};
+                err.issues.forEach(issue => {
+                    if (issue.path.length > 0) {
+                        errors[issue.path[0] as string] = issue.message;
+                    }
+                });
+                setFieldErrors(errors);
+                setError('Please fix the errors below.');
+            } else {
+                setError(err.response?.data?.message || 'Registration failed. Please try again.');
+            }
+            
             setLoading(false);
         }
     };
@@ -86,6 +108,12 @@ export default function AttendeeSignupPage() {
                                     placeholder="John Doe"
                                 />
                             </div>
+                            {fieldErrors.fullName && (
+                                <p className="text-xs text-red-400 flex items-center gap-1 ml-1 mt-1">
+                                    <AlertCircle className="w-3 h-3" />
+                                    {fieldErrors.fullName}
+                                </p>
+                            )}
                         </div>
 
                         {/* Email Field */}

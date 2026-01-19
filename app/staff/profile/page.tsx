@@ -4,7 +4,9 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { staffService, StaffProfile } from '@/services/staffService';
 import { authService } from '@/services/authService';
-import { User, Phone, LogOut, Shield, Mail, Calendar, Edit2, Check, X, UserCircle } from 'lucide-react';
+import { User, Phone, LogOut, Shield, Mail, Calendar, Edit2, Check, X, UserCircle, AlertCircle } from 'lucide-react';
+import { staffProfileUpdateSchema } from '@/lib/validations/staff';
+import { z } from 'zod';
 import Link from 'next/link';
 
 export default function ProfilePage() {
@@ -14,6 +16,7 @@ export default function ProfilePage() {
     const [error, setError] = useState('');
     const [isEditing, setIsEditing] = useState(false);
     const [mounted, setMounted] = useState(false);
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
     
     // Edit state
     const [editData, setEditData] = useState({
@@ -59,20 +62,42 @@ export default function ProfilePage() {
         
         try {
             setUpdating(true);
+            setError('');
+            setFieldErrors({});
             
-            // Sanitize: only send fields that have values to avoid 400 errors from backend
+            // Validate with Zod
+            const validatedData = staffProfileUpdateSchema.parse({
+                fullName: editData.fullName?.trim(),
+                phoneNumber: editData.phoneNumber?.trim(),
+                gender: editData.gender || undefined
+            });
+            
+            // Sanitize: only send fields that have values
             const sanitizedData: any = {};
-            if (editData.fullName?.trim()) sanitizedData.fullName = editData.fullName.trim();
-            if (editData.phoneNumber?.trim()) sanitizedData.phoneNumber = editData.phoneNumber.trim();
-            if (editData.gender) sanitizedData.gender = editData.gender;
+            if (validatedData.fullName) sanitizedData.fullName = validatedData.fullName;
+            if (validatedData.phoneNumber) sanitizedData.phoneNumber = validatedData.phoneNumber;
+            if (validatedData.gender) sanitizedData.gender = validatedData.gender;
 
             await staffService.updateProfile(sanitizedData);
             await fetchProfile(); // Refresh profile
             setIsEditing(false);
         } catch (err: any) {
             console.error('Update failed:', err);
-            const msg = err.response?.data?.message || 'Failed to update profile.';
-            alert(Array.isArray(msg) ? msg.join(', ') : msg);
+            
+            // Handle Zod validation errors
+            if (err instanceof z.ZodError) {
+                const errors: Record<string, string> = {};
+                err.issues.forEach(issue => {
+                    if (issue.path.length > 0) {
+                        errors[issue.path[0] as string] = issue.message;
+                    }
+                });
+                setFieldErrors(errors);
+                setError('Please fix the errors below.');
+            } else {
+                const msg = err.response?.data?.message || 'Failed to update profile.';
+                setError(Array.isArray(msg) ? msg.join(', ') : msg);
+            }
         } finally {
             setUpdating(false);
         }
@@ -96,6 +121,14 @@ export default function ProfilePage() {
 
     return (
         <div className="max-w-4xl mx-auto space-y-6 pb-20 relative z-10">
+            {/* Error Alert */}
+            {error && (
+                <div className="alert alert-error rounded-2xl">
+                    <AlertCircle className="w-5 h-5" />
+                    <span>{error}</span>
+                </div>
+            )}
+            
             {/* Minimal Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-2 relative z-30">
                 <div>
@@ -190,6 +223,12 @@ export default function ProfilePage() {
                                             <p className="font-bold text-slate-700">{profile.fullName}</p>
                                         </div>
                                     )}
+                                    {fieldErrors.fullName && (
+                                        <p className="text-xs text-red-500 flex items-center gap-1 mt-1">
+                                            <AlertCircle className="w-3 h-3" />
+                                            {fieldErrors.fullName}
+                                        </p>
+                                    )}
                                 </div>
 
                                 {/* Email */}
@@ -215,6 +254,12 @@ export default function ProfilePage() {
                                         <div className="p-4 bg-slate-50/50 rounded-xl border border-slate-100/50">
                                             <p className="font-bold text-slate-700">{profile.phoneNumber || '--'}</p>
                                         </div>
+                                    )}
+                                    {fieldErrors.phoneNumber && (
+                                        <p className="text-xs text-red-500 flex items-center gap-1 mt-1">
+                                            <AlertCircle className="w-3 h-3" />
+                                            {fieldErrors.phoneNumber}
+                                        </p>
                                     )}
                                 </div>
 

@@ -1,9 +1,11 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { User, Mail, Phone, LogOut, Shield, Calendar, Globe, MapPin, Edit2, Check, X } from 'lucide-react';
+import { User, Mail, Phone, LogOut, Shield, Calendar, Globe, MapPin, Edit2, Check, X, AlertCircle } from 'lucide-react';
 import { authService } from '@/services/authService';
 import { attendeeService } from '@/services/attendeeService';
+import { attendeeProfileUpdateSchema } from '@/lib/validations/attendee';
+import { z } from 'zod';
 import { useRouter } from 'next/navigation';
 
 export default function ProfilePage() {
@@ -13,6 +15,7 @@ export default function ProfilePage() {
     const [isEditing, setIsEditing] = useState(false);
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
     const [formData, setFormData] = useState({ 
         fullName: '',
         phoneNumber: '', 
@@ -69,19 +72,29 @@ export default function ProfilePage() {
         if (e) e.preventDefault();
         setError('');
         setSuccessMessage('');
+        setFieldErrors({});
+        
         try {
             setLoading(true);
             
-            // 1. Consolidated Update with data sanitization
-            const payload: any = {
-                fullName: formData.fullName,
-            };
-
-            if (formData.phoneNumber) payload.phoneNumber = formData.phoneNumber;
-            if (formData.gender) payload.gender = formData.gender;
-            if (formData.country) payload.country = formData.country;
-            if (formData.city) payload.city = formData.city;
-            if (formData.dateOfBirth) payload.dateOfBirth = formData.dateOfBirth;
+            // Validate with Zod
+            const validatedData = attendeeProfileUpdateSchema.parse({
+                fullName: formData.fullName?.trim(),
+                phoneNumber: formData.phoneNumber?.trim(),
+                dateOfBirth: formData.dateOfBirth,
+                gender: formData.gender || undefined,
+                country: formData.country?.trim(),
+                city: formData.city?.trim()
+            });
+            
+            // Build payload with validated data
+            const payload: any = {};
+            if (validatedData.fullName) payload.fullName = validatedData.fullName;
+            if (validatedData.phoneNumber) payload.phoneNumber = validatedData.phoneNumber;
+            if (validatedData.gender) payload.gender = validatedData.gender;
+            if (validatedData.country) payload.country = validatedData.country;
+            if (validatedData.city) payload.city = validatedData.city;
+            if (validatedData.dateOfBirth) payload.dateOfBirth = validatedData.dateOfBirth;
 
             await attendeeService.updateFullProfile(payload);
             
@@ -94,8 +107,21 @@ export default function ProfilePage() {
             setTimeout(() => setSuccessMessage(''), 3000);
         } catch (e: any) {
             console.error("Update failed", e);
-            const msg = e.response?.data?.message || "Failed to update profile";
-            setError(Array.isArray(msg) ? msg.join(', ') : msg);
+            
+            // Handle Zod validation errors
+            if (e instanceof z.ZodError) {
+                const errors: Record<string, string> = {};
+                e.issues.forEach(issue => {
+                    if (issue.path.length > 0) {
+                        errors[issue.path[0] as string] = issue.message;
+                    }
+                });
+                setFieldErrors(errors);
+                setError('Please fix the errors below.');
+            } else {
+                const msg = e.response?.data?.message || "Failed to update profile";
+                setError(Array.isArray(msg) ? msg.join(', ') : msg);
+            }
         } finally {
             setLoading(false);
         }
@@ -125,6 +151,20 @@ export default function ProfilePage() {
                         </button>
                     )}
                 </div>
+
+                {/* Error/Success Messages */}
+                {error && (
+                    <div className="mx-6 mt-4 p-3 bg-red-50 border border-red-200 rounded-xl flex items-center gap-2 text-red-700 text-sm">
+                        <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                        <span>{error}</span>
+                    </div>
+                )}
+                {successMessage && (
+                    <div className="mx-6 mt-4 p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-2 text-emerald-700 text-sm">
+                        <Check className="w-4 h-4 flex-shrink-0" />
+                        <span>{successMessage}</span>
+                    </div>
+                )}
 
                 {/* Content - Scrollable only if needed inside card, but kept compact */}
                 <form id="profile-form" onSubmit={handleSave} className="flex-1 overflow-y-auto p-6 space-y-6">
@@ -163,6 +203,12 @@ export default function ProfilePage() {
                                  ) : (
                                      <p className="text-sm font-medium text-slate-700">{user.phoneNumber || 'Not set'}</p>
                                  )}
+                                 {fieldErrors.phoneNumber && (
+                                     <p className="text-xs text-red-500 flex items-center gap-1 mt-1">
+                                         <AlertCircle className="w-3 h-3" />
+                                         {fieldErrors.phoneNumber}
+                                     </p>
+                                 )}
                              </div>
                              <div className="space-y-1">
                                  <label className="text-[10px] font-bold text-slate-400 uppercase">Gender</label>
@@ -193,6 +239,12 @@ export default function ProfilePage() {
                                  ) : (
                                      <p className="text-sm font-medium text-slate-700">
                                         {user.dateOfBirth ? new Date(user.dateOfBirth).toLocaleDateString() : 'Not set'}
+                                     </p>
+                                 )}
+                                 {fieldErrors.dateOfBirth && (
+                                     <p className="text-xs text-red-500 flex items-center gap-1 mt-1">
+                                         <AlertCircle className="w-3 h-3" />
+                                         {fieldErrors.dateOfBirth}
                                      </p>
                                  )}
                              </div>

@@ -235,15 +235,9 @@ export default function MyTicketsPage() {
                           <QrCode className="w-16 h-16 text-white mb-3" />
                           <button 
                               onClick={() => handleViewQR(ticket)}
-                              className="btn btn-sm btn-white text-slate-900 font-bold w-full rounded-full shadow-lg mb-2 relative z-10"
+                              className="btn btn-sm btn-white text-white font-bold w-full rounded-full shadow-lg mb-2 relative z-10"
                           >
                               View QR
-                          </button>
-                          <button 
-                              onClick={() => handleDownloadPDF(ticket)}
-                              className="btn btn-sm btn-outline text-white border-white/20 hover:bg-white/10 w-full rounded-full relative z-10"
-                          >
-                              <Download className="w-3 h-3 mr-1" /> PDF
                           </button>
                           {ticket.status === 'valid' && (
                               <button 
