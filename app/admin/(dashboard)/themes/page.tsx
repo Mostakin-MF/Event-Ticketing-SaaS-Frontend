@@ -619,14 +619,17 @@ function PaletteEntry({ label, value }: { label: string; value: any }) {
     );
 }
 
+import { themeFormSchema, jsonValidator, ThemeFormData } from '@/lib/validations/theme';
+import { ZodError } from 'zod';
+
 function ThemeFormModal({ onClose, onSuccess, initialData }: { onClose: () => void; onSuccess: () => void; initialData?: Theme | null }) {
     const isEditing = !!initialData;
     const [activeTab, setActiveTab] = useState<'general' | 'advanced'>('general');
 
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<ThemeFormData>({
         name: initialData?.name || '',
         description: initialData?.description || '',
-        category: initialData?.category || ('general' as ThemeCategory),
+        category: initialData?.category || 'general',
         price: initialData?.price || 0,
         thumbnailUrl: initialData?.thumbnailUrl || '',
         primaryColor: initialData?.defaultProperties?.colors?.primary || '#10b981',
@@ -650,41 +653,49 @@ function ThemeFormModal({ onClose, onSuccess, initialData }: { onClose: () => vo
     );
 
     const [loading, setLoading] = useState(false);
+    const [errors, setErrors] = useState<Record<string, string>>({});
     const [jsonError, setJsonError] = useState<string | null>(null);
 
     const handleSubmit = async (e: any) => {
         e.preventDefault();
         setLoading(true);
+        setErrors({});
         setJsonError(null);
 
         try {
-            let templateStructure, defaultContent;
-            try {
-                templateStructure = JSON.parse(templateStructureJson);
-                defaultContent = JSON.parse(defaultContentJson);
-            } catch (err) {
+            // Validate Form Data
+            const validatedData = themeFormSchema.parse(formData);
+
+            // Validate JSON Fields
+            const isTemplateValid = jsonValidator.safeParse(templateStructureJson);
+            const isContentValid = jsonValidator.safeParse(defaultContentJson);
+
+            if (!isTemplateValid.success || !isContentValid.success) {
                 setJsonError('SYNTAX_FAILURE: INVALID_JSON_PAYLOAD');
                 setLoading(false);
                 return;
             }
 
+            const templateStructure = JSON.parse(templateStructureJson);
+            const defaultContent = JSON.parse(defaultContentJson);
+
             const payload = {
-                name: formData.name,
-                description: formData.description,
-                category: formData.category,
-                isPremium: formData.isPremium,
-                price: formData.isPremium ? Number(formData.price) : 0,
-                thumbnailUrl: formData.thumbnailUrl,
+                name: validatedData.name,
+                description: validatedData.description,
+                category: validatedData.category,
+                isPremium: validatedData.isPremium,
+                price: validatedData.isPremium ? Number(validatedData.price) : 0,
+                thumbnailUrl: validatedData.thumbnailUrl,
                 defaultProperties: {
                     colors: {
-                        primary: formData.primaryColor,
-                        secondary: formData.secondaryColor,
-                        background: formData.backgroundColor,
-                        text: formData.textColor
+                        primary: validatedData.primaryColor,
+                        secondary: validatedData.secondaryColor,
+                        background: validatedData.backgroundColor,
+                        text: validatedData.textColor
                     },
                     fonts: {
-                        heading: formData.headingFont,
-                        body: formData.bodyFont
+                        heading: validatedData.headingFont,
+                        body: validatedData.bodyFont
                     },
                     layout: 'grid'
                 },
@@ -701,6 +712,15 @@ function ThemeFormModal({ onClose, onSuccess, initialData }: { onClose: () => vo
             onClose();
         } catch (error) {
             console.error(isEditing ? 'Failed to update theme' : 'Failed to create theme', error);
+            if (error instanceof ZodError) {
+                const newErrors: Record<string, string> = {};
+                error.issues.forEach((err) => {
+                    if (err.path[0]) {
+                        newErrors[err.path[0] as string] = err.message;
+                    }
+                });
+                setErrors(newErrors);
+            }
         } finally {
             setLoading(false);
         }
@@ -749,12 +769,12 @@ function ThemeFormModal({ onClose, onSuccess, initialData }: { onClose: () => vo
                                         <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1">Identity Tag</label>
                                         <input
                                             type="text"
-                                            required
-                                            className="w-full px-5 py-4 rounded-[1.5rem] bg-slate-50 border border-slate-100 text-[13px] font-bold italic text-slate-900 focus:bg-white focus:border-emerald-500 focus:ring-8 focus:ring-emerald-500/5 outline-none transition-all placeholder:text-slate-300"
+                                            className={`w-full px-5 py-4 rounded-[1.5rem] bg-slate-50 border ${errors.name ? 'border-red-500' : 'border-slate-100'} text-[13px] font-bold italic text-slate-900 focus:bg-white focus:border-emerald-500 focus:ring-8 focus:ring-emerald-500/5 outline-none transition-all placeholder:text-slate-300`}
                                             value={formData.name}
                                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                             placeholder="Aesthetic Node Name..."
                                         />
+                                        {errors.name && <p className="text-red-500 text-[10px] font-bold mt-1 px-2">{errors.name}</p>}
                                     </div>
                                     <div>
                                         <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1">Design Category</label>
@@ -778,12 +798,24 @@ function ThemeFormModal({ onClose, onSuccess, initialData }: { onClose: () => vo
                                             <ImageIcon className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
                                             <input
                                                 type="url"
-                                                className="w-full pl-14 pr-5 py-4 rounded-[1.5rem] bg-slate-50 border border-slate-100 text-[11px] font-bold text-slate-900 focus:bg-white focus:border-emerald-500 outline-none transition-all"
-                                                value={formData.thumbnailUrl}
+                                                className={`w-full pl-14 pr-5 py-4 rounded-[1.5rem] bg-slate-50 border ${errors.thumbnailUrl ? 'border-red-500' : 'border-slate-100'} text-[11px] font-bold text-slate-900 focus:bg-white focus:border-emerald-500 outline-none transition-all`}
+                                                value={formData.thumbnailUrl || ''}
                                                 onChange={(e) => setFormData({ ...formData, thumbnailUrl: e.target.value })}
                                                 placeholder="https://assets.cdn/blueprint.jpg"
                                             />
                                         </div>
+                                        {errors.thumbnailUrl && <p className="text-red-500 text-[10px] font-bold mt-1 px-2">{errors.thumbnailUrl}</p>}
+                                    </div>
+                                    <div className="group">
+                                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1">Description</label>
+                                        <textarea
+                                            rows={3}
+                                            className={`w-full px-5 py-4 rounded-[1.5rem] bg-slate-50 border ${errors.description ? 'border-red-500' : 'border-slate-100'} text-[12px] font-medium text-slate-600 focus:bg-white focus:border-emerald-500 focus:ring-8 focus:ring-emerald-500/5 outline-none transition-all placeholder:text-slate-300 resize-none`}
+                                            value={formData.description}
+                                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                            placeholder="System specifications..."
+                                        />
+                                        {errors.description && <p className="text-red-500 text-[10px] font-bold mt-1 px-2">{errors.description}</p>}
                                     </div>
                                 </div>
 

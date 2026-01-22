@@ -20,7 +20,7 @@ export default function CreateTenantModal({ isOpen, onClose, onSuccess }: Create
     });
 
     const handleNameChange = (name: string) => {
-        // Auto-generate slug from name if slug hasn't been manually edited or is empty
+        
         const suggestedSlug = name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
         setFormData(prev => ({
             ...prev,

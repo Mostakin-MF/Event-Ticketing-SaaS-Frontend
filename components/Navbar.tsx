@@ -44,7 +44,7 @@ export default function Navbar() {
                         <NavLink href="/#features">Product</NavLink>
                         <NavLink href="/pricing">Pricing</NavLink>
                         <NavLink href="/about">Mission</NavLink>
-                        <NavLink href="/resources">Changelog</NavLink>
+                        <NavLink href="/resources">Resource</NavLink>
                     </div>
 
                     {/* Actions */}
